@@ -167,7 +167,7 @@ const getColumnValue = async (token, itemId, columnId) => {
         }
       }`;
 
-    const response = await Execute(mondayClient, query, { variables });
+    const response = await Execute(mondayClient, query);
     return response.data.items[0].column_values[0].value;
   } catch (err) {
     console.error(err);
@@ -252,7 +252,7 @@ const setColumnValue = async (boardId, itemId, columnId, value) => {
     }
   }
   `;
-  const response = await Execute(mondayClient, query, { variables });
+  const response = await Execute(mondayClient, query);
   return response;
 }
 const mutateColumns = async (boardId, itemId, val) => {
@@ -275,7 +275,7 @@ const changeColumnValue = async (token, boardId, itemId, columnId, value) => {
         }
       }
       `;
-    const response = await mondayClient.api(query, { variables });
+    const response = await mondayClient.api(query);
     return response;
   } catch (err) {
     console.error(err);
