@@ -3,7 +3,7 @@
   "version": "2.0.0",
   "license": "MIT",
   "scripts": {
-    "start": "npm run stop && npm run server",
+    "start": "npm run server",
     "server": "nodemon ./src/app.js",
     "stop": "kill-port 8302"
   },

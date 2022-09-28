@@ -10,7 +10,8 @@ const app = express();
 app.use(bodyParser.json());
 app.use(routes);
 app.listen(port, () => {
-  //createTunnel(port);
+  createTunnel(port);
 });
+
 
 module.exports = app;
