@@ -11,7 +11,7 @@ const MondayClient = () => {
 const getSubitemInfo = async (itemId) => {
   const mondayClient = MondayClient();
   const query = 
-  `query ($itemId: [Int]) { items (ids: $itemId) {
+  `query { items (ids: [${itemId}]) {
         id
         name
         board { id name }
@@ -21,8 +21,7 @@ const getSubitemInfo = async (itemId) => {
       }
     }`;
 
-    const variables = { itemId };
-    const response = await Execute(mondayClient, query, { variables });
+    const response = await Execute(mondayClient, query);
 
     if (response?.data?.items)
       return response.data.items[0];
@@ -93,7 +92,7 @@ const GetInvalidItemStates = async (ids, status) => {
 const getMinimumItemInfo = async (itemId) => {
   const mondayClient = MondayClient();
   const query = 
-  `query ($itemId: [Int]) { items (ids: $itemId) {
+  `query { items (ids: [${itemId}]) {
         id
         name
         board { id name workspace_id description }
@@ -101,8 +100,7 @@ const getMinimumItemInfo = async (itemId) => {
         }
     }`;
 
-    const variables = { itemId };
-    const response = await Execute(mondayClient, query, { variables });
+    const response = await Execute(mondayClient, query);
 
     if (response?.data?.items)
       return response.data.items[0];
@@ -113,7 +111,7 @@ const getMinimumItemInfo = async (itemId) => {
 const getItemInfo = async (itemId) => {
   const mondayClient = MondayClient();
   const query = 
-  `query ($itemId: [Int]) { items (ids: $itemId) {
+  `query { items (ids: [${itemId}]) {
         id
         name
         board { id name workspace_id description }
@@ -132,8 +130,7 @@ const getItemInfo = async (itemId) => {
       }
     }`;
 
-    const variables = { itemId };
-    const response = await Execute(mondayClient, query, { variables });
+    const response = await Execute(mondayClient, query);
 
     if (response?.data?.items)
       return response.data.items[0];
@@ -162,14 +159,14 @@ const getColumnValue = async (token, itemId, columnId) => {
     const mondayClient = initMondayClient();
     mondayClient.setToken(token);
 
-    const query = `query($itemId: [Int], $columnId: [String]) {
-        items (ids: $itemId) {
-          column_values(ids:$columnId) {
+    const query = `query {
+        items (ids: [${itemId}]) {
+          column_values(ids:[${columnId}]) {
             value
           }
         }
       }`;
-    const variables = { columnId, itemId };
+
     const response = await Execute(mondayClient, query, { variables });
     return response.data.items[0].column_values[0].value;
   } catch (err) {
@@ -249,14 +246,12 @@ const delayAsync = async (ms) => {
 
 const setColumnValue = async (boardId, itemId, columnId, value) => {
   const mondayClient = MondayClient();
-  const query = `mutation change_column_value($boardId: Int!, $itemId: Int!, $columnId: String!, $value: JSON!) {
-    change_column_value(board_id: $boardId, item_id: $itemId, column_id: $columnId, value: $value) {
+  const query = `mutation {
+    change_column_value(board_id: ${boardId}, item_id: ${itemId}, column_id: ${columnId}, value: ${JSON.stringify(value).replace(/"/g, '\\"')}) {
       id
     }
   }
   `;
-  const variables = { boardId: parseInt(boardId), columnId, itemId: parseInt(itemId), value: JSON.stringify(value) };
-
   const response = await Execute(mondayClient, query, { variables });
   return response;
 }
@@ -274,14 +269,12 @@ const changeColumnValue = async (token, boardId, itemId, columnId, value) => {
   try {
     const mondayClient = initMondayClient({ token });
 
-    const query = `mutation change_column_value($boardId: Int!, $itemId: Int!, $columnId: String!, $value: JSON!) {
-        change_column_value(board_id: $boardId, item_id: $itemId, column_id: $columnId, value: $value) {
+    const query = `mutation {
+        change_column_value(board_id: ${boardId}, item_id: ${itemId}, column_id: ${columnId}, value: ${JSON.stringify(val).replace(/"/g, '\\"')}) {
           id
         }
       }
       `;
-    const variables = { boardId, columnId, itemId, value };
-
     const response = await mondayClient.api(query, { variables });
     return response;
   } catch (err) {
