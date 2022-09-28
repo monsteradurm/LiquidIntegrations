@@ -78,13 +78,43 @@ async function ItemDeleted(req, res) {
         return res.status(200).send({});
     }
 
-    syncsketchHelper.StoreSyncsketchReviewData(project_id, syncReview, reviewDetails);
+    await syncsketchHelper.StoreSyncsketchReviewData(project_id, syncReview, reviewDetails);
 
     let mondayItem = await mondayService.getItemInfo(reviewDetails.pulse);
     await mondayHelper.OnSyncitemRemoved(syncReview, mondayItem, item_name, reviewDetails);
     await syncsketchHelper.AssertReviewName(syncReview, mondayItem, reviewDetails);
     await syncsketchHelper.SortReviewItems(review_id);
     
+    return res.status(200).send({});
+}
+
+async function ItemStatusChanged(req, res) {
+    console.log("ITEM STATUS CHANGED" );
+    const { project: {name : project_name, id: project_id }, 
+            review: { id: review_id, name: review_name }, 
+            item_id } = req.body;
+
+    if (project_name.indexOf('/') >= 0) {
+        console.log("Assumed outdated project \"ITEM STATUS UPDATED\":" + project_name)
+        return res.status(200).send({});
+    }
+
+    const syncReview = await syncsketchService.GetReviewInfo(review_id);
+    const syncItem = await syncsketchService.GetItemInfo(item_id);
+
+    let reviewDetails;
+    try {
+        reviewDetails = JSON.parse(syncReview.description);
+    }
+    catch { 
+        console.log("Could not parse Review Details in review description (JSON)")
+        return res.status(200).send({});
+    }
+
+    await syncsketchHelper.StoreSyncsketchReviewData(project_id, syncReview, reviewDetails);
+    await syncsketchHelper.StoreSyncsketchItemData(project_id, syncReview, syncItem, reviewDetails);
+    await syncsketchHelper.SortReviewItems(review_id);
+
     return res.status(200).send({});
 }
 
@@ -104,8 +134,8 @@ async function ItemCreated(req, res) {
       return res.status(200).send({});
   }
 
-  syncsketchHelper.StoreSyncsketchReviewData(project.id, syncReview, reviewDetails);
-  syncsketchHelper.StoreSyncsketchItemData(project.id, syncReview, syncItem, reviewDetails);
+  await syncsketchHelper.StoreSyncsketchReviewData(project.id, syncReview, reviewDetails);
+  await syncsketchHelper.StoreSyncsketchItemData(project.id, syncReview, syncItem, reviewDetails);
   
   let mondayItem = await mondayService.getItemInfo(reviewDetails.pulse);
   await mondayHelper.AssertSubItem(syncReview, syncItem, mondayItem, reviewDetails);
@@ -119,6 +149,7 @@ module.exports = {
     ItemCreated,
     ItemDeleted,
     ReviewCreated,
-    ReviewDeleted
+    ReviewDeleted,
+    ItemStatusChanged
 };
   
