@@ -10,6 +10,8 @@ admin.initializeApp({
 });
 
 const SYNCITEMS = 'SyncsketchItems';
+const SyncUploads = 'SyncsketchUploads';
+
 const MondayStatus = 'MondayStatus';
 const ProjectMgr = 'ProjectManager';
 
@@ -46,6 +48,17 @@ const GetSyncsketchReview = async (sketchId, groupId, projectId, data) => {
     return {error: 'no document'};
 }
 
+const GetUploadInfo = async (itemId) => {
+    const docRef = getFirestore().collection(SyncUploads)
+    .doc(itemId.toString())
+
+    const docSnap = await docRef.get();
+
+    if (docSnap.exists) 
+        return docSnap.data();
+
+    return null;
+}
 const GetSyncsketchItem = async (itemId, sketchId, groupId, projectId) => {
     const docRef = getFirestore().collection(SYNCITEMS)
         .doc(projectId.toString())
@@ -154,5 +167,6 @@ module.exports = {
     MondayProjectExists,
     SyncsketchReviewExists,
     GetStatusIds,
+    GetUploadInfo,
     DeleteMultipleStatus
 }

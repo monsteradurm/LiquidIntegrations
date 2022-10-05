@@ -235,8 +235,8 @@ function ParseMaxColumnValue(parent, title, attr) {
 function ParseColumnValue(parent, title, attr) {
     if (!parent || !parent.column_values)
         return null;
-    console.log("LOOKING FOR " + title + ", " + attr);
-    console.log(parent.column_values);
+    //console.log("LOOKING FOR " + title + ", " + attr);
+    //console.log(parent.column_values);
 
     const col = _.find(parent.column_values, c => c.title === title);
     return col[attr];

@@ -5,6 +5,7 @@ const syncsketchHelper = require('../helpers/syncsketch-helper');
 const firebaseService = require('../services/firebase-service');
 
 const _ = require('lodash');
+const e = require('express');
 
 async function ReviewCreated(req, res) {
     const { project: {name : project_name, id: project_id }, action, review_id } = req.body;
@@ -119,11 +120,14 @@ async function ItemStatusChanged(req, res) {
 }
 
 async function ItemCreated(req, res) {
+  
   const { item_name, project, item_id } = req.body;
   const review_id = req.body.review.id;
 
   const syncReview = await syncsketchService.GetReviewInfo(review_id);
   const syncItem = await syncsketchService.GetItemInfo(item_id);
+  const uploadInfo = await firebaseService.GetUploadInfo(item_id);
+
 
   let reviewDetails;
   try {
@@ -137,7 +141,17 @@ async function ItemCreated(req, res) {
   await syncsketchHelper.StoreSyncsketchReviewData(project.id, syncReview, reviewDetails);
   await syncsketchHelper.StoreSyncsketchItemData(project.id, syncReview, syncItem, reviewDetails);
   
-  let mondayItem = await mondayService.getItemInfo(reviewDetails.pulse);
+  if (uploadInfo) {
+      console.log("Upload Info Exists")
+      console.log(uploadInfo);
+  } else {
+      console.log("Could not find upload info");
+  }
+
+  let mondayItem = await mondayService.getItemInfo(
+      uploadInfo?.pulse ? uploadInfo.pulse : reviewDetails.pulse
+  );
+  
   await mondayHelper.AssertSubItem(syncReview, syncItem, mondayItem, reviewDetails);
   await syncsketchHelper.AssertReviewName(syncReview, mondayItem, reviewDetails);
   await syncsketchHelper.SortReviewItems(review_id);

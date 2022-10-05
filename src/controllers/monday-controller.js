@@ -7,11 +7,13 @@ const mondayHelper = require('../helpers/monday-helper');
 const { TRANSFORMATION_TYPES } = require('../constants/transformation');
 
 async function StoreBoardItemStatus(req, res) {
+  console.log(JSON.stringify(req.body))
   if (req.body.challenge) {
     console.log("StoreBoardItemStatus, Challenge Accepted..");
     return res.status(200).send(req.body);
   }
 
+  
   const inputFields = req.body.payload.inputFields;
   const { columnValue, previousColumnValue, itemId, boardId } = inputFields;
   const { board, group } = await mondayService.getMinimumItemInfo(parseInt(itemId))
