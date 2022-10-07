@@ -102,10 +102,10 @@ const getSupportBoardInfo = async(boardId) => {
 
   const response = await Execute(mondayClient, query);
 
-    if (response?.data?.items)
-      return response.data.items[0];
+    if (response?.data?.boards)
+      return response.data.boards[0];
 
-    throw 'Error retrieving Monday Item info' + JSON.stringify(response);
+    throw 'Error retrieving Monday Board info' + JSON.stringify(response);
 }
 
 const getSupportItemInfo = async (itemId) => {
