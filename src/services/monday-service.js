@@ -118,7 +118,6 @@ const getSupportItemInfo = async (itemId) => {
       column_values {
           id text additional_info title value type
         }
-      updates
       created_at
       updated_at
     }
