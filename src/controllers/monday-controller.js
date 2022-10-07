@@ -3,7 +3,7 @@ const transformationService = require('../services/transformation-service');
 const syncsketchService = require('../services/syncsketch-service');
 const firebaseService = require('../services/firebase-service');
 const mondayHelper = require('../helpers/monday-helper');
-import * as _ from 'underscore';
+const _ = require('lodash');
 
 const { TRANSFORMATION_TYPES } = require('../constants/transformation');
 
