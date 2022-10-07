@@ -3,12 +3,14 @@ const transformationService = require('../services/transformation-service');
 const syncsketchService = require('../services/syncsketch-service');
 const firebaseService = require('../services/firebase-service');
 const mondayHelper = require('../helpers/monday-helper');
+import * as _ from 'underscore';
 
 const { TRANSFORMATION_TYPES } = require('../constants/transformation');
 
 async function DeleteSupportItem(req, res) {
+  console.log("Delete Support Item Called..");
   if (req.body.challenge) {
-    console.log("StoreBoardItemStatus, Challenge Accepted..");
+    console.log("DeleteSupportItem, Challenge Accepted..");
     return res.status(200).send(req.body);
   }
   try {
@@ -26,8 +28,9 @@ async function DeleteSupportItem(req, res) {
 }
 
 async function UpdateSupportItem(req, res) {
+  console.log("Update Support Item Called..");
   if (req.body.challenge) {
-    console.log("StoreBoardItemStatus, Challenge Accepted..");
+    console.log("UpdateSupportItem, Challenge Accepted..");
     return res.status(200).send(req.body);
   }
 
@@ -75,7 +78,9 @@ async function StoreBoardItemStatus(req, res) {
 
     try{
       const mondayItem = await mondayService.getItemInfo(itemId);
-      const department = mondayHelper.ParseColumnValue(item, 'Feedback Department', 'text')
+      let subitem_index = ParseMaxSubitemValue(mondayItem, 'Index', 'text') + 1;
+      let review = _.find(mondayItem.subitems, s => mondayHelper.ParseColumnValue(s, 'Index', 'text') === subitem_index);
+      const department = mondayHelper.ParseColumnValue(review, 'Feedback Department', 'text')
 
       if (department)
         data['department'] = department;

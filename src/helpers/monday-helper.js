@@ -283,5 +283,6 @@ module.exports = {
     ParseColumnValue,
     GetStatusCollection,
     ValidateWorkspaceId,
-    AssertAllStatusValid
+    AssertAllStatusValid,
+    ParseMaxSubitemValue
 };
