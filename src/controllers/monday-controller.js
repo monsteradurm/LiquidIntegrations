@@ -30,11 +30,12 @@ async function UpdateSupportItem(req, res) {
     console.log("StoreBoardItemStatus, Challenge Accepted..");
     return res.status(200).send(req.body);
   }
+
   try {
     const pulseId = req.body.event.pulseId;
-    const item = mondayService.getSupportItemInfo(pulseId);
+    const item = await mondayService.getSupportItemInfo(pulseId);
     const boardId = req.body.event.boardId;
-    const board = mondayService.getSupportBoardInfo(boardId);
+    const board = await mondayService.getSupportBoardInfo(boardId);
 
     let result = await firebaseService.StoreSupportBoard(boardId, board);
     console.log(result);
@@ -73,7 +74,7 @@ async function StoreBoardItemStatus(req, res) {
     let data = {text, index, color, board: boardId, id: itemId, board_name, board_description, group: group_id, group_title };
 
     try{
-      const mondayItem = mondayService.getItemInfo(itemId);
+      const mondayItem = await mondayService.getItemInfo(itemId);
       const department = mondayHelper.ParseColumnValue(item, 'Feedback Department', 'text')
 
       if (department)
