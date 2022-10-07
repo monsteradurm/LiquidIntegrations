@@ -36,13 +36,19 @@ async function UpdateSupportItem(req, res) {
 
   try {
     const pulseId = req.body.event.pulseId;
+    console.log("Getting Support Item: " + pulseId);
     const item = await mondayService.getSupportItemInfo(pulseId);
     const boardId = req.body.event.boardId;
+    console.log("Getting Support Board: " + boardId);
     const board = await mondayService.getSupportBoardInfo(boardId);
 
+    console.log("Storing Board: ")
+    console.log(JSON.stringify(board));
     let result = await firebaseService.StoreSupportBoard(boardId, board);
     console.log(result);
 
+    console.log("Storing Item: ")
+    console.log(JSON.stringify(item));
     result = await firebaseService.StoreSupportItem(boardId, pulseId, item);
     console.log(result);
   } catch (err) {
