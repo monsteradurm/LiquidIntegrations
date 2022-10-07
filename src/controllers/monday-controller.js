@@ -51,7 +51,7 @@ async function UpdateSupportItem(req, res) {
 
     console.log("Storing Item: ")
     result = await firebaseService.StoreSupportItem(boardId, pulseId, item);
-    
+
     console.log(result);
   } catch (err) {
     console.log("Error during SupportItemUpdated: ")
@@ -87,8 +87,13 @@ async function StoreBoardItemStatus(req, res) {
     try{
       const mondayItem = await mondayService.getItemInfo(itemId);
       let subitem_index = mondayHelper.ParseMaxSubitemValue(mondayItem, 'Index', 'text');
+
+      console.log("MAX SUB ITEM INDEX: " + subitem_index)
       let review = _.find(mondayItem.subitems, s => mondayHelper.ParseColumnValue(s, 'Index', 'text') === subitem_index);
       const department = mondayHelper.ParseColumnValue(review, 'Feedback Department', 'text')
+
+      console.log("REVIEW");
+      console.log(JSON.stringify(review))
 
       console.log("\n\nFound Feedback Department: " + department);
       if (department)
