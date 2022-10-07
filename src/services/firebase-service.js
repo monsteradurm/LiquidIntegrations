@@ -11,7 +11,7 @@ admin.initializeApp({
 
 const SYNCITEMS = 'SyncsketchItems';
 const SyncUploads = 'SyncsketchUploads';
-
+const SupportItems = 'SupportItems'
 const MondayStatus = 'MondayStatus';
 const ProjectMgr = 'ProjectManager';
 
@@ -98,6 +98,33 @@ const StoreSyncsketchItem = async (itemId, sketchId, groupId, projectId, data) =
         .doc(itemId.toString())
         .set(data);
 }
+const StoreSupportItem = async (boardId, itemId, data) => {
+    console.log("store Support Item, " + boardId +", " + itemId)
+    console.log(data);
+    return await getFirestore().collection(SupportItems)
+        .doc(boardId)
+        .collection('items')
+        .doc(itemId)
+        .set(data);
+}
+
+const StoreSupportBoard = async (boardId, data) => {
+    console.log("Store Support Board, " + boardId)
+    console.log(data);
+
+
+    return await getFirestore().collection(SupportItems)
+        .doc(boardId)
+        .set(data);
+}
+
+const DeleteSupportItem = async (boardId, itemId) => {
+    return await getFirestore().collection(SupportItems)
+        .doc(boardId)
+        .collection('items')
+        .doc(itemId)
+        .delete();
+}
 
 const DeleteSyncsketchReview = async (sketchId, groupId, projectId, data) => {
     return await getFirestore().collection(SYNCITEMS)
@@ -168,5 +195,8 @@ module.exports = {
     SyncsketchReviewExists,
     GetStatusIds,
     GetUploadInfo,
-    DeleteMultipleStatus
+    DeleteMultipleStatus,
+    DeleteSupportItem,
+    StoreSupportBoard,
+    StoreSupportItem
 }

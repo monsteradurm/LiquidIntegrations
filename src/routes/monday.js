@@ -4,4 +4,6 @@ const mondayController = require('../controllers/monday-controller');
 
 router.post('/monday/SubitemRenamed', mondayController.SubitemRenamed);
 router.post('/monday/StoreBoardItemStatus', mondayController.StoreBoardItemStatus);
+router.post('/monday/SupportItemUpdated', mondayController.UpdateSupportItem);
+router.post('/monday/SupportItemDeleted', mondayController.DeleteSupportItem);
 module.exports = router;

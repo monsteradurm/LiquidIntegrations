@@ -89,6 +89,49 @@ const GetInvalidItemStates = async (ids, status) => {
 
 }
 
+const getSupportBoardInfo = async(boardId) => {
+  const mondayClient = MondayClient();
+  const query = `query { boards (ids: [${boardId}]) {
+      id name
+      groups { id title }
+      columns{
+        id title settings_str
+      }
+    }
+  }`;
+
+  const response = await Execute(mondayClient, query);
+
+    if (response?.data?.items)
+      return response.data.items[0];
+
+    throw 'Error retrieving Monday Item info' + JSON.stringify(response);
+}
+
+const getSupportItemInfo = async (itemId) => {
+  const mondayClient = MondayClient();
+  const query = `query { items (ids: [${itemId}]) {
+      id
+      name
+      board { id name }
+      group { id title }
+      column_values {
+          id text additional_info title value type
+        }
+      updates
+      created_at
+      updated_at
+    }
+  }`;
+
+  const response = await Execute(mondayClient, query);
+
+    if (response?.data?.items)
+      return response.data.items[0];
+
+    throw 'Error retrieving Monday Item info' + JSON.stringify(response);
+}
+
 const getMinimumItemInfo = async (itemId) => {
   const mondayClient = MondayClient();
   const query = 
@@ -293,5 +336,7 @@ module.exports = {
   mutateColumns,
   ForceComplexityError,
   GetBoard,
-  GetInvalidItemStates
+  GetInvalidItemStates,
+  getSupportBoardInfo,
+  getSupportItemInfo
 };

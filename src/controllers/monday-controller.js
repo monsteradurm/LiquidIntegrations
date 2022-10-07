@@ -6,6 +6,49 @@ const mondayHelper = require('../helpers/monday-helper');
 
 const { TRANSFORMATION_TYPES } = require('../constants/transformation');
 
+async function DeleteSupportItem(req, res) {
+  if (req.body.challenge) {
+    console.log("StoreBoardItemStatus, Challenge Accepted..");
+    return res.status(200).send(req.body);
+  }
+  try {
+  const pulseId = req.body.event.pulseId;
+  const boardId = req.body.event.boardId;
+
+  const result = await firebaseService.DeleteSupportItem(boardId, pulseId);
+
+  console.log(result);
+  } catch(err) {
+    console.log("Error during support item deleted:")
+    console.log(err);
+  }
+  return res.status(200).send({});
+}
+
+async function UpdateSupportItem(req, res) {
+  if (req.body.challenge) {
+    console.log("StoreBoardItemStatus, Challenge Accepted..");
+    return res.status(200).send(req.body);
+  }
+  try {
+    const pulseId = req.body.event.pulseId;
+    const item = mondayService.getSupportItemInfo(pulseId);
+    const boardId = req.body.event.boardId;
+    const board = mondayService.getSupportBoardInfo(boardId);
+
+    let result = await firebaseService.StoreSupportBoard(boardId, board);
+    console.log(result);
+
+    result = await firebaseService.StoreSupportItem(boardId, pulseId, item);
+    console.log(result);
+  } catch (err) {
+    console.log("Error during SupportItemUpdated: ")
+    console.log(err);
+  }
+
+  return res.status(200).send({});
+}
+
 async function StoreBoardItemStatus(req, res) {
   console.log(JSON.stringify(req.body))
   if (req.body.challenge) {
@@ -27,8 +70,18 @@ async function StoreBoardItemStatus(req, res) {
     console.log("Adding to stored monday status collection: " + statusCollection + ", " + itemId)
     const { text, index } = columnValue.label;
     const { color } = columnValue.label.style;
-    const data = {text, index, color, board: boardId, id: itemId, board_name, board_description, group: group_id, group_title };
+    let data = {text, index, color, board: boardId, id: itemId, board_name, board_description, group: group_id, group_title };
 
+    try{
+      const mondayItem = mondayService.getItemInfo(itemId);
+      const department = mondayHelper.ParseColumnValue(item, 'Feedback Department', 'text')
+
+      if (department)
+        data['department'] = department;
+    } catch (err) {
+      console.log("Could not parse Feedback Department")
+      console.log(err);
+    }
     await firebaseService.StoreMondayItemStatus(statusCollection, itemId, data);
   }
 
@@ -65,4 +118,6 @@ async function SubitemRenamed(req, res) {
 module.exports = {
   SubitemRenamed,
   StoreBoardItemStatus,
+  UpdateSupportItem,
+  DeleteSupportItem
 };

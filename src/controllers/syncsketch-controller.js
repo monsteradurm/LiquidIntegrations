@@ -81,7 +81,8 @@ async function ItemDeleted(req, res) {
 
     await syncsketchHelper.StoreSyncsketchReviewData(project_id, syncReview, reviewDetails);
 
-    let mondayItem = await mondayService.getItemInfo(reviewDetails.pulse);
+    const uploadInfo = await firebaseService.GetUploadInfo(item_id);
+    let mondayItem = await mondayService.getItemInfo(uploadInfo?.pulse ? uploadInfo.pulse : reviewDetails.pulse);
     await mondayHelper.OnSyncitemRemoved(syncReview, mondayItem, item_name, reviewDetails);
     await syncsketchHelper.AssertReviewName(syncReview, mondayItem, reviewDetails);
     await syncsketchHelper.SortReviewItems(review_id);
@@ -151,7 +152,7 @@ async function ItemCreated(req, res) {
   let mondayItem = await mondayService.getItemInfo(
       uploadInfo?.pulse ? uploadInfo.pulse : reviewDetails.pulse
   );
-  
+
   await mondayHelper.AssertSubItem(syncReview, syncItem, mondayItem, reviewDetails);
   await syncsketchHelper.AssertReviewName(syncReview, mondayItem, reviewDetails);
   await syncsketchHelper.SortReviewItems(review_id);
