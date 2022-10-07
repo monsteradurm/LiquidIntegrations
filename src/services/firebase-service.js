@@ -102,9 +102,9 @@ const StoreSupportItem = async (boardId, itemId, data) => {
     console.log("store Support Item, " + boardId +", " + itemId)
     console.log(data);
     return await getFirestore().collection(SupportItems)
-        .doc(boardId)
+        .doc(boardId.toString())
         .collection('items')
-        .doc(itemId)
+        .doc(itemId.toString())
         .set(data);
 }
 
@@ -114,15 +114,15 @@ const StoreSupportBoard = async (boardId, data) => {
 
 
     return await getFirestore().collection(SupportItems)
-        .doc(boardId)
+        .doc(boardId.toString())
         .set(data);
 }
 
 const DeleteSupportItem = async (boardId, itemId) => {
     return await getFirestore().collection(SupportItems)
-        .doc(boardId)
+        .doc(boardId.toString())
         .collection('items')
-        .doc(itemId)
+        .doc(itemId.toString())
         .delete();
 }
 
