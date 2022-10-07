@@ -68,7 +68,7 @@ async function StoreBoardItemStatus(req, res) {
   const { title: group_title, id: group_id } = group; 
 
   const statusCollection = mondayHelper.GetStatusCollection(columnValue.label);
-  const prevStatusCollection = mondayHelper.GetStatusCollection(previousColumnValue.label);
+  const prevStatusCollection = mondayHelper.GetStatusCollection(previousColumnValue?.label);
 
   if (statusCollection) {
     console.log("Adding to stored monday status collection: " + statusCollection + ", " + itemId)
