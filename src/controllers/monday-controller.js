@@ -89,7 +89,8 @@ async function StoreBoardItemStatus(req, res) {
       const reviews = _.sortBy(mondayItem.subitems, s => mondayHelper.ParseColumnValue(s, 'Index', 'text') || -1).reverse();
 
       let review = reviews.length > 0 ? reviews[0] : null;
-      const department = mondayHelper.ParseColumnValue(review, 'Feedback Department', 'text')
+
+      const department = review ? mondayHelper.ParseColumnValue(review, 'Feedback Department', 'text') : 'Internal';
 
       console.log("REVIEW");
       console.log(JSON.stringify(review))
