@@ -86,10 +86,9 @@ async function StoreBoardItemStatus(req, res) {
 
     try{
       const mondayItem = await mondayService.getItemInfo(itemId);
-      let subitem_index = mondayHelper.ParseMaxSubitemValue(mondayItem, 'Index', 'text');
+      const reviews = _.sortBy(mondayItem.subitems, s => mondayHelper.ParseColumnValue(s, 'Index', 'text') || -1).reverse();
 
-      console.log("MAX SUB ITEM INDEX: " + subitem_index)
-      let review = _.find(mondayItem.subitems, s => mondayHelper.ParseColumnValue(s, 'Index', 'text') === subitem_index);
+      let review = reviews.length > 0 ? reviews[0] : null;
       const department = mondayHelper.ParseColumnValue(review, 'Feedback Department', 'text')
 
       console.log("REVIEW");
