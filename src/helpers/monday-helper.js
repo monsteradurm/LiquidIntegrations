@@ -75,9 +75,7 @@ function ParseMaxSubitemValue(parent, col, attr) {
 const AllStatus = ['Review', 'Feedback', 'Assistance', 'In Progress'];
 
 function GetStatusCollection(statusCol) {
-    console.log(statusCol)
     const { text } = statusCol;
-    console.log(text);
     if (text.indexOf('Review') >= 0)
         return 'Review';
     else if (text.indexOf('Feedback') >= 0)
@@ -173,7 +171,6 @@ function FindSubitem(item_name, subitems, feedbackDepartment) {
     return null;
 }
 function ValidateWorkspaceId(id) {
-    console.log(id);
     return id.toString() === '1635792';
 }
 
@@ -256,14 +253,12 @@ async function AssertStatusItemsValid(Status) {
     if (ids.length > 0)
         grouped.push(ids)
 
-    console.log("GROUPS: " + JSON.stringify(grouped));
-
     grouped.forEach(async g => {
 
         const invalid = await mondayService.GetInvalidItemStates(g, Status);
         
         if (invalid.length > 0) {
-            console.log(`Found Invalid State (${Status}): ` + JSON.stringify(invalid));
+            console.log(`Found Invalid State (${Status}) `)// + JSON.stringify(invalid));
             await firebaseService.DeleteMultipleStatus(Status, invalid)
         }
         else {

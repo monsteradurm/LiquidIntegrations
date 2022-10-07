@@ -40,7 +40,7 @@ const GetBoard = async (boardId) => {
 
   const response = await Execute(mondayClient, query);
 
-  console.log(response);
+  //console.log(response);
   if (response?.data?.boards) {
     const board = response.data.boards[0];
       return board;
@@ -63,13 +63,13 @@ const GetInvalidItemStates = async (ids, status) => {
   }`
 
   const response = await Execute(mondayClient, query);
-  console.log("INVALID: " + JSON.stringify(response) )
+  //console.log("INVALID: " + JSON.stringify(response) )
   const invalid = response.data.items.filter(i => {
     if (i.state !== 'active')
       return true; 
 
     const columns = i.column_values;
-    console.log("FOUND COLUMN VALUES ?" + JSON.stringify(columns))
+    //console.log("FOUND COLUMN VALUES ?" + JSON.stringify(columns))
 
     if (!columns) return true;
 
@@ -78,7 +78,7 @@ const GetInvalidItemStates = async (ids, status) => {
       return true;
       
     const statusCol = statusCols[0].text;
-    console.log("Checking " + statusCol + " === " + status + " " + statusCol.indexOf(status.toString()) < 0);
+    //console.log("Checking " + statusCol + " === " + status + " " + statusCol.indexOf(status.toString()) < 0);
 
     if (statusCol.indexOf(status) < 0)
       return true;
