@@ -120,7 +120,10 @@ async function StoreBoardItemStatus(req, res) {
       }
 
       data['artists'] = artists;
-      
+
+      let directors = mondayItem ? mondayHelper.ParseColumnValue(mondayItem, 'Director', 'text') : null;
+      data['directors'] = directors;
+
     } catch (err) {
       console.log("Could not parse Feedback Department")
       console.log(err);
