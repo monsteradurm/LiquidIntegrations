@@ -94,13 +94,33 @@ async function StoreBoardItemStatus(req, res) {
       const review_name = review ? review.name : null;
       const item_name = mondayItem ? mondayItem.name : null;
 
+      const review_tags = review ? mondayHelper.ParseColumnValue(review, 'Tags', 'text') : null;
+      const item_tags = mondayItem ? mondayHelper.ParseColumnValue(mondayItem, 'Tags', 'text') : null;
+
       if (department)
         data['department'] = department;
+
       if (review_name)
         data['review_name'] = review_name;
+
       if (item_name)
         data['item_name'] = item_name;
-        
+
+      data['review_tags'] = review_tags;
+      data['item_tags'] = item_tags;
+
+      let artists = mondayItem ? mondayHelper.ParseColumnValue(mondayItem, 'Artist', 'text') : null;
+      if (review && mondayItem?.subitems?.filter(s => {
+        const review_artists = mondayHelper.ParseColumnValue(s, 'Artist', 'text');
+        if (review_artists && review_artists.length > 0)
+          return true;
+        return false;
+      }).length > 0) {
+        artists =  mondayHelper.ParseColumnValue(review, 'Artist', 'text')
+      }
+
+      data['artists'] = artists;
+      
     } catch (err) {
       console.log("Could not parse Feedback Department")
       console.log(err);
