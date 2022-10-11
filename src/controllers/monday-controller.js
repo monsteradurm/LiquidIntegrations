@@ -91,13 +91,16 @@ async function StoreBoardItemStatus(req, res) {
       let review = reviews.length > 0 ? reviews[0] : null;
 
       const department = review ? mondayHelper.ParseColumnValue(review, 'Feedback Department', 'text') : 'Internal';
+      const review_name = review ? review.name : null;
+      const item_name = mondayItem ? mondayItem.name : null;
 
-      console.log("REVIEW");
-      console.log(JSON.stringify(review))
-
-      console.log("\n\nFound Feedback Department: " + department);
       if (department)
         data['department'] = department;
+      if (review_name)
+        data['review_name'] = review_name;
+      if (item_name)
+        data['item_name'] = item_name;
+        
     } catch (err) {
       console.log("Could not parse Feedback Department")
       console.log(err);
