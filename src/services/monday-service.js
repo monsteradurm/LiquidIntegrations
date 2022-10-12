@@ -294,6 +294,19 @@ const setColumnValue = async (boardId, itemId, columnId, value) => {
     }
   }
   `;
+
+  const response = await Execute(mondayClient, query);
+  return response;
+}
+const setTextColumnValue = async (boardId, itemId, columnId, value) => {
+  const mondayClient = MondayClient();
+  const query = `mutation {
+    change_column_value(board_id: ${boardId}, item_id: ${itemId}, column_id: ${columnId}, value: "\\"${value}\\"") {
+      id
+    }
+  }
+  `;
+  console.log(query);
   const response = await Execute(mondayClient, query);
   return response;
 }
@@ -332,6 +345,7 @@ module.exports = {
   changeColumnValue,
   setColumnValue,
   createSubitem,
+  setTextColumnValue,
   mutateColumns,
   ForceComplexityError,
   GetBoard,

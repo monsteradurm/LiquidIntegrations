@@ -161,9 +161,39 @@ async function SubitemRenamed(req, res) {
   return res.status(200).send({});
 }
 
+async function SubitemUpdated(req,res) {
+  if (req.body.challenge) {
+    console.log("Subitem Updated, Challenge Accepted..");
+    return res.status(200).send(req.body);
+  }
+  try {
+    const { parentItemId } = req.body.event;
+    const item = await mondayService.getItemInfo(parentItemId);
+    const reviews = _.sortBy(item.subitems, s => mondayHelper.ParseColumnValue(s, 'Index', 'text') || -1).reverse();
+    let review = reviews.length > 0 ? reviews[0] : null;
+
+    const department = review ? mondayHelper.ParseColumnValue(review, 'Feedback Department', 'text') : 'Internal';
+    const department_col = mondayHelper.ParseColumnId(item, 'Feedback Department');
+    const link = review ? mondayHelper.ParseColumnValue(review, 'Link', 'text') : null;
+    const link_col = mondayHelper.ParseColumnId(item, 'Link');
+
+    if (department) {
+      await mondayService.setTextColumnValue(item.board.id, item.id, department_col, department)
+    }
+    if (link) {
+      await mondayService.setTextColumnValue(item.board.id, item.id, link_col, link)
+    }
+  }
+  catch (err) {
+    console.log("Error on Subitem Update: ")
+    console.log(JSON.stringify(err));
+  }
+}
+
 module.exports = {
   SubitemRenamed,
   StoreBoardItemStatus,
   UpdateSupportItem,
-  DeleteSupportItem
+  DeleteSupportItem,
+  SubitemUpdated
 };
