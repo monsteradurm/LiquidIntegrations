@@ -7,4 +7,6 @@ router.post('/monday/SubitemUpdated', mondayController.SubitemUpdated);
 router.post('/monday/StoreBoardItemStatus', mondayController.StoreBoardItemStatus);
 router.post('/monday/SupportItemUpdated', mondayController.UpdateSupportItem);
 router.post('/monday/SupportItemDeleted', mondayController.DeleteSupportItem);
+router.post('/monday/SupportItemComment', mondayController.SupportItemComment);
+router.post('/monday/MondayItemComment', mondayController.MondayItemComment);
 module.exports = router;

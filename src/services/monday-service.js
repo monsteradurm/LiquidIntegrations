@@ -179,6 +179,43 @@ const getItemInfo = async (itemId) => {
 
     throw 'Error retrieving Monday Item info' + JSON.stringify(response);
 }
+
+const deleteUpdate = async (itemId) => {
+  const mondayClient = MondayClient();
+  const query = `mutation {
+    delete_update (id: ${itemId}) {
+        id
+    }
+  }`
+  const response = await Execute(mondayClient, query);
+
+    if (response?.data?.delete_update?.id)
+      return response.data;
+
+    throw 'Error retrieving Monday Item info' + JSON.stringify(response);
+}
+
+const getUpdateInfo = async (itemId) => {
+  const mondayClient = MondayClient();
+  const query = `query {
+    items ( ids: ${itemId} ) {
+      updates {
+        id created_at updated_at body
+          replies {
+            id updated_at body
+          }
+      }
+    }
+  }`;
+
+  const response = await Execute(mondayClient, query);
+
+    if (response?.data?.items)
+      return response.data.items[0]?.updates;
+
+    throw 'Error retrieving Monday Item info' + JSON.stringify(response);
+}
+
 const createSubitem = async (itemId, name) => {
   const mondayClient = MondayClient();
   const mutation =
@@ -320,6 +357,7 @@ const mutateColumns = async (boardId, itemId, val) => {
   const response = await mondayClient.api(mutation);
   return response;
 }
+
 const changeColumnValue = async (token, boardId, itemId, columnId, value) => {
   try {
     const mondayClient = initMondayClient({ token });
@@ -351,5 +389,7 @@ module.exports = {
   GetBoard,
   GetInvalidItemStates,
   getSupportBoardInfo,
-  getSupportItemInfo
+  getSupportItemInfo,
+  getUpdateInfo,
+  deleteUpdate
 };

@@ -188,6 +188,56 @@ async function SubitemUpdated(req,res) {
     console.log("Error on Subitem Update: ")
     console.log(JSON.stringify(err));
   }
+  return res.status(200).send({ })
+}
+
+async function MondayItemComment(req, res) {
+  if (req.body.challenge) {
+    console.log("Monday Item Comment, Challenge Accepted..");
+    return res.status(200).send(req.body);
+  }
+
+  try {
+    const { replyId, textBody, updateId } = req.body.event;
+    if (!replyId && textBody?.indexOf('Description:') < 0) {
+      console.log("Deleting Update");
+      console.log(await mondayService.deleteUpdate(updateId));
+    }
+  }
+  catch (err) {
+    console.log("Error on Support Item Update");
+    console.log(JSON.stringify(err));
+  }
+
+  return res.status(200).send({ });
+}
+
+async function SupportItemComment(req, res) {
+  if (req.body.challenge) {
+    console.log("Support Item Comment, Challenge Accepted..");
+    return res.status(200).send(req.body);
+  }
+  try {
+    console.log(JSON.stringify(req.body.event))
+    const { pulseId, replyId, textBody, boardId, updateId } = req.body.event;
+
+    console.log(pulseId, replyId, textBody, boardId, updateId);
+    if (!replyId && textBody?.indexOf('Description:') < 0) {
+      console.log("Deleting Update");
+      console.log(await mondayService.deleteUpdate(updateId));
+    }
+    else {
+      const updates = await mondayService.getUpdateInfo(pulseId);
+      console.log(JSON.stringify(updates));
+      await firebaseService.StoreSupportItemUpdates(boardId.toString(), pulseId.toString(), updates);
+    }
+  }
+  catch (err) {
+    console.log("Error on Support Item Update");
+    console.log(JSON.stringify(err));
+  }
+
+  return res.status(200).send({ });
 }
 
 module.exports = {
@@ -195,5 +245,7 @@ module.exports = {
   StoreBoardItemStatus,
   UpdateSupportItem,
   DeleteSupportItem,
-  SubitemUpdated
+  SubitemUpdated,
+  SupportItemComment,
+  MondayItemComment
 };

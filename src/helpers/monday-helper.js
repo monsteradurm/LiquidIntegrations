@@ -271,6 +271,10 @@ async function AssertAllStatusValid() {
     AllStatus.forEach(async status => await AssertStatusItemsValid(status))
 }
 
+async function FilterComments(id, body) {
+    
+}
+
 module.exports = {
     AssertSubItem,
     OnSyncitemRemoved,

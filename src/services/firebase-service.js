@@ -98,6 +98,18 @@ const StoreSyncsketchItem = async (itemId, sketchId, groupId, projectId, data) =
         .doc(itemId.toString())
         .set(data);
 }
+
+
+const StoreSupportItemUpdates = async (boardId, itemId, updates) => {
+    console.log("store Support Item Update, " + boardId + ", " + itemId)
+    return await getFirestore().collection(SupportItems)
+        .doc(boardId.toString())
+        .collection('items')
+        .doc(itemId.toString())
+        .update({updates: updates});
+}
+
+
 const StoreSupportItem = async (boardId, itemId, data) => {
     console.log("store Support Item, " + boardId +", " + itemId)
     console.log(data);
@@ -198,5 +210,6 @@ module.exports = {
     DeleteMultipleStatus,
     DeleteSupportItem,
     StoreSupportBoard,
-    StoreSupportItem
+    StoreSupportItem,
+    StoreSupportItemUpdates
 }
