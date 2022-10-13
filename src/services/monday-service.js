@@ -202,7 +202,7 @@ const getUpdateInfo = async (itemId) => {
       updates {
         id created_at updated_at body
           replies {
-            id updated_at body
+            id updated_at body created_at
           }
       }
     }
