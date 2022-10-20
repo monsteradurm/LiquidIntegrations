@@ -151,6 +151,7 @@ const getMinimumItemInfo = async (itemId) => {
 }
 
 const getItemInfo = async (itemId) => {
+  console.log("RETRIEVING ITEM INFO: " + JSON.stringify(itemId));
   const mondayClient = MondayClient();
   const query = 
   `query { items (ids: [${itemId}]) {
