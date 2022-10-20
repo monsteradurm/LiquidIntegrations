@@ -13,6 +13,8 @@ async function PersonColumnUpdated(req, res) {
     console.log("Person Column Updated, Challenge Accepted..");
     return res.status(200).send(req.body);
   }
+  console.log(JSON.stringify(req.body));
+  
   try {
     let { pulseId, groupId, boardId, parentItemId} = req.body.event;
 
