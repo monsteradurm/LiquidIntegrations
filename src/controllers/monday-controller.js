@@ -33,7 +33,7 @@ async function PersonColumnUpdated(req, res) {
 
     const data = {id: pulseId, groupId, boardId, artists, status};
 
-    console.log(JSON.stringify(data));
+    console.log("AllocatonData: " + JSON.stringify(data));
     if (artists?.length > 0) {
       console.log("Storing Allocation Data: " + JSON.stringify(data));
       await firebaseService.StoreArtistAllocations(data);

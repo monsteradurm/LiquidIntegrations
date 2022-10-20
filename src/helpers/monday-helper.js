@@ -101,8 +101,6 @@ function ParseArtists (item) {
 function CurrentArtist(item) {
     
         let itemArtist = ParseArtists(item);
-        console.log("item artist: " + JSON.stringify(itemArtist))
-
         const subitems = item.subitems;
 
         let reviewArtist = null;
@@ -121,11 +119,11 @@ function CurrentArtist(item) {
                 reassigned = valid.length > 0;
                 reviewArtist = ParseArtists(review);
             }
-
-            console.log(JSON.stringify({reviewArtist, itemArtist, reassigned}))
-            if (!!reviewArtist || !!reassigned) return reviewArtist
-            return itemArtist;
         }
+
+        console.log(JSON.stringify({reviewArtist, itemArtist, reassigned}))
+        if (!!reviewArtist || !!reassigned) return reviewArtist
+        return itemArtist;
 
     return null;
 }
