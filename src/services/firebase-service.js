@@ -14,6 +14,7 @@ const SyncUploads = 'SyncsketchUploads';
 const SupportItems = 'SupportItems'
 const MondayStatus = 'MondayStatus';
 const ProjectMgr = 'ProjectManager';
+const Allocations = 'Allocations'
 
 const MondayProjectExists = async (projectId) => {
     const projRef = getFirestore().collection(ProjectMgr).doc(projectId.toString());
@@ -177,6 +178,52 @@ const GetStatusIds = async (status) => {
     return collectionRef.map(d => d.id);
 }
 
+const GetAllocatedArtistIds = async () => {
+    const collectionRef = await getFirestore().collection(Allocations)
+    .listDocuments()
+
+    return collectionRef.map(d => d.id);
+}
+
+const StoreArtistAllocations = async (data) => {
+    if (!data?.artists || data.artists.length < 1 || !data.id)
+        return;
+
+    console.log("Storing for Artists" + JSON.stringify(data.artists));
+    const fs = getFirestore();
+    const batch = fs.batch();
+
+    data.artists.forEach(a => {
+        const ref = fs.collection(Allocations).doc(a).collection('items').doc(data.id.toString());
+        batch.set(ref, data);
+    })
+    await batch.commit();
+}
+
+const DeleteInvalidArtistAllocations = async (data) => {
+    if (!data.id)
+        return;
+
+    let artists = data.artists || [];
+    let AllArtists = await GetAllocatedArtistIds() || [];
+
+    AllArtists = AllArtists.filter(a => artists.indexOf(a) < 0);
+
+    console.log("Removing From Artists" + JSON.stringify(AllArtists));
+    if (AllArtists.length < 1)
+        return;
+    
+    const fs = getFirestore();
+    const batch = fs.batch();
+
+    AllArtists.forEach(a => {
+        const ref = fs.collection(Allocations).doc(a).collection('items').doc(data.id.toString());
+        batch.delete(ref);
+    });
+
+    await batch.commit();
+}
+
 const DeleteMultipleStatus = async (status, ids) => {
     const fs = getFirestore();
     const batch = fs.batch();
@@ -186,6 +233,7 @@ const DeleteMultipleStatus = async (status, ids) => {
     })
     await batch.commit();
 }
+
 const DeleteMondayItemStatus = async (status, itemId) => {
     return await getFirestore().collection(MondayStatus)
     .doc(status)
@@ -211,5 +259,7 @@ module.exports = {
     DeleteSupportItem,
     StoreSupportBoard,
     StoreSupportItem,
-    StoreSupportItemUpdates
+    StoreSupportItemUpdates,
+    StoreArtistAllocations,
+    DeleteInvalidArtistAllocations
 }

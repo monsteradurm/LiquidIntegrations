@@ -7,6 +7,46 @@ const _ = require('lodash');
 
 const { TRANSFORMATION_TYPES } = require('../constants/transformation');
 
+async function PersonColumnUpdated(req, res) {
+  console.log("Person Column Update Called..");
+  if (req.body.challenge) {
+    console.log("Person Column Updated, Challenge Accepted..");
+    return res.status(200).send(req.body);
+  }
+  try {
+    let { pulseId, groupId, boardId, parentItemId} = req.body.event;
+
+    if (parentItemId)
+      pulseId = parentItemId;
+
+    const mondayItem = await mondayService.getItemInfo(pulseId);
+    let status = mondayHelper.ParseColumnValue(mondayItem, 'Status', 'text');
+    if (!status || status.length < 1)
+      status = 'Not Started';
+
+    status = status.toLowerCase();
+
+    let artists = mondayHelper.CurrentArtist(mondayItem);
+
+    if (status.indexOf('approved') || status.indexOf('blocked') || status.indexOf('retask'))
+      artists = [];
+
+    const data = {id: pulseId, groupId, boardId, artists, status};
+
+    if (artists?.length > 0) {
+      console.log("Storing Allocation Data: " + JSON.stringify(data));
+      await firebaseService.StoreArtistAllocations(data);
+    }
+    
+    await firebaseService.DeleteInvalidArtistAllocations(data);
+
+  } catch (err) {
+    console.log("Error Updating Person Column: " + JSON.stringify(err));
+  }
+
+  return res.status(200).send({});
+}
+
 async function DeleteSupportItem(req, res) {
   console.log("Delete Support Item Called..");
   if (req.body.challenge) {
@@ -247,5 +287,6 @@ module.exports = {
   DeleteSupportItem,
   SubitemUpdated,
   SupportItemComment,
-  MondayItemComment
+  MondayItemComment,
+  PersonColumnUpdated
 };

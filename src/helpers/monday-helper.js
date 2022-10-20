@@ -87,6 +87,49 @@ function GetStatusCollection(statusCol) {
     return null;
 }
 
+function ParseArtists (item) {
+    const text = ParseColumnValue(item, 'Artist', 'text');
+    if (!text) return null;
+
+    if (text.indexOf(', '))
+        return text.split(', ');
+
+    return [text];
+}
+
+
+function CurrentArtist(item) {
+    
+        let itemArtist = ParseArtists(item);
+        console.log("item artist: " + JSON.stringify(itemArtist))
+
+        const subitems = item.subitems;
+
+        let reviewArtist = null;
+        let reassigned = false;
+
+        if (item.subitems?.length) {
+            let subitem_index, review = null;
+            subitem_index = ParseMaxSubitemValue(item, 'Index', 'text');
+
+            
+            if (subitem_index && subitem_index >= 0)
+                review = _.find(item.subitems, s => ParseColumnValue(s, 'Index', 'text').toString() === subitem_index.toString());
+
+            if (review) {
+                const valid = item.subitems?.filter(s => ParseArtists(s)?.length > 0);
+                reassigned = valid.length > 0;
+                reviewArtist = ParseArtists(review);
+            }
+
+            console.log(JSON.stringify({reviewArtist, itemArtist, reassigned}))
+            if (!!reviewArtist || !!reassigned) return reviewArtist
+            return itemArtist;
+        }
+
+    return null;
+}
+
 async function AssertSubItem(syncReview, syncItem, mondayItem, reviewDetails) {
     const { name, review_index, review_pt_index, department } = ParseSubitemName(syncItem.name);
     const subitems = mondayItem.subitems;
@@ -284,5 +327,6 @@ module.exports = {
     ValidateWorkspaceId,
     AssertAllStatusValid,
     ParseMaxSubitemValue,
-    ParseColumnId
+    ParseColumnId,
+    CurrentArtist
 };
