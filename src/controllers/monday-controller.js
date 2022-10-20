@@ -14,12 +14,15 @@ async function PersonColumnUpdated(req, res) {
     return res.status(200).send(req.body);
   }
   console.log(JSON.stringify(req.body));
-  
+
   try {
-    let { pulseId, groupId, boardId, parentItemId} = req.body.event;
+    let { pulseId, groupId, boardId, parentItemId, itemId} = req.body.event;
 
     if (parentItemId)
       pulseId = parentItemId;
+
+    else if (!pulseId && itemId)
+      pulseId = itemId;
 
     const mondayItem = await mondayService.getItemInfo(pulseId);
 
