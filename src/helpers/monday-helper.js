@@ -121,11 +121,9 @@ function CurrentArtist(item) {
             }
         }
 
-        console.log(JSON.stringify({reviewArtist, itemArtist, reassigned}))
+        console.log("CurrentArtist: " + JSON.stringify({reviewArtist, itemArtist, reassigned}))
         if (!!reviewArtist || !!reassigned) return reviewArtist
         return itemArtist;
-
-    return null;
 }
 
 async function AssertSubItem(syncReview, syncItem, mondayItem, reviewDetails) {

@@ -20,6 +20,7 @@ async function PersonColumnUpdated(req, res) {
       pulseId = parentItemId;
 
     const mondayItem = await mondayService.getItemInfo(pulseId);
+    
     let status = mondayHelper.ParseColumnValue(mondayItem, 'Status', 'text');
     if (!status || status.length < 1)
       status = 'Not Started';
@@ -28,7 +29,7 @@ async function PersonColumnUpdated(req, res) {
 
     let artists = mondayHelper.CurrentArtist(mondayItem);
 
-    if (status.indexOf('approved') || status.indexOf('blocked') || status.indexOf('retask'))
+    if (status.includes('approved') || status.includes('blocked') || status.includes('retask'))
       artists = [];
 
     const data = {id: pulseId, groupId, boardId, artists, status};
