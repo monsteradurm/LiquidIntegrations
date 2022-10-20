@@ -21,6 +21,14 @@ async function PersonColumnUpdated(req, res) {
 
     const mondayItem = await mondayService.getItemInfo(pulseId);
 
+    if (!mondayItem || mondayItem.state !== 'active') {
+      console.log("monday item no longer exists")
+      firebaseService.DeleteInvalidArtistAllocations(
+        {id: pulseId, groupId, boardId, artists: []}
+      )
+      return res.status(200).send({});
+    }
+
     let status = mondayHelper.ParseColumnValue(mondayItem, 'Status', 'text');
     if (!status || status.length < 1)
       status = 'Not Started';

@@ -156,6 +156,7 @@ const getItemInfo = async (itemId) => {
   `query { items (ids: [${itemId}]) {
         id
         name
+        state
         board { id name workspace_id description }
         group { id title }
         column_values {
@@ -173,11 +174,12 @@ const getItemInfo = async (itemId) => {
     }`;
 
     const response = await Execute(mondayClient, query);
+    const items = response?.data?.items || [];
 
-    if (response?.data?.items)
-      return response.data.items[0];
+    if (items?.length < 1)
+      return null;
 
-    throw 'Error retrieving Monday Item info' + JSON.stringify(response);
+    return items[0];
 }
 
 const deleteUpdate = async (itemId) => {
