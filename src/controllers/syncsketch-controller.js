@@ -20,6 +20,9 @@ async function ReviewCreated(req, res) {
 
     const syncReview = await syncsketchService.GetReviewInfo(review_id);
 
+    console.log("SYNC REVIEW: ");
+    console.log(JSON.stringify(syncReview));
+    
     let reviewDetails;
     try {
         reviewDetails = JSON.parse(syncReview.description);
@@ -83,6 +86,7 @@ async function ItemDeleted(req, res) {
 
     const uploadInfo = await firebaseService.GetUploadInfo(item_id);
     let mondayItem = await mondayService.getItemInfo(uploadInfo?.pulse ? uploadInfo.pulse : reviewDetails.pulse);
+    
     await mondayHelper.OnSyncitemRemoved(syncReview, mondayItem, item_name, reviewDetails);
     await syncsketchHelper.AssertReviewName(syncReview, mondayItem, reviewDetails);
     await syncsketchHelper.SortReviewItems(review_id);
