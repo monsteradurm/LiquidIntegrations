@@ -224,7 +224,7 @@ const DeleteInvalidArtistAllocations = async (data) => {
 
     await batch.commit();
 }
-
+ 
 const DeleteMultipleStatus = async (status, ids) => {
     const fs = getFirestore();
     const batch = fs.batch();
