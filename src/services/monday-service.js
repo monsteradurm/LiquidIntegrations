@@ -123,7 +123,7 @@ const getSupportItemInfo = async (itemId) => {
     }
   }`;
 
-  console.log(query);
+
   const response = await Execute(mondayClient, query);
 
     if (response?.data?.items)
@@ -174,7 +174,7 @@ const getItemInfo = async (itemId) => {
         }
       }
     }`;
-
+    console.log(query);
     const response = await Execute(mondayClient, query);
     const items = response?.data?.items || [];
 
