@@ -217,6 +217,7 @@ const DeleteInvalidArtistAllocations = async (data) => {
     const batch = fs.batch();
 
     AllArtists.forEach(a => {
+        console.log("Removing: " + a);
         const ref = fs.collection(Allocations).doc(a).collection('items').doc(data.id.toString());
         batch.delete(ref);
     });
