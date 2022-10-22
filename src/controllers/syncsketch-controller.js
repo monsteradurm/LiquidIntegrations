@@ -18,11 +18,12 @@ async function ReviewCreated(req, res) {
     if (!firebaseService.MondayProjectExists(project_name) || action !== 'review_created')
         return res.status(200).send({});
 
+    console.log("FINDING REVIEW: " + review_id)
     const syncReview = await syncsketchService.GetReviewInfo(review_id);
 
     console.log("SYNC REVIEW: ");
     console.log(JSON.stringify(syncReview));
-    
+
     let reviewDetails;
     try {
         reviewDetails = JSON.parse(syncReview.description);

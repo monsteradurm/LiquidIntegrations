@@ -16,7 +16,7 @@ async function PersonColumnUpdated(req, res) {
   console.log(JSON.stringify(req.body));
 
   try {
-    let { pulseId, groupId, boardId, parentItemId, itemId} = req.body.event;
+    let { pulseId, parentItemId, itemId} = req.body.event;
 
     if (parentItemId)
       pulseId = parentItemId;
@@ -26,6 +26,9 @@ async function PersonColumnUpdated(req, res) {
 
     const mondayItem = await mondayService.getItemInfo(pulseId);
 
+    const boardId = mondayItem.board.id;
+    const groupId = mondayItem.group.id;
+    
     if (!mondayItem || mondayItem.state !== 'active') {
       console.log("monday item no longer exists")
       firebaseService.DeleteInvalidArtistAllocations(
