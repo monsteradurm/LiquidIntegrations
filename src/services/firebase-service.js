@@ -15,6 +15,7 @@ const SupportItems = 'SupportItems'
 const MondayStatus = 'MondayStatus';
 const ProjectMgr = 'ProjectManager';
 const Allocations = 'Allocations'
+const Gallery = 'Gallery';
 
 const MondayProjectExists = async (projectId) => {
     const projRef = getFirestore().collection(ProjectMgr).doc(projectId.toString());
@@ -161,6 +162,18 @@ const DeleteSyncsketchItem = async (itemId, sketchId, groupId, projectId) => {
         .delete();
 }
 
+const StoreGalleryItem = async (id, data) => {
+    return await getFirestore().collection(Gallery)
+    .doc(id.toString())
+    .set(data);
+}
+
+const DeleteGalleryItem = async (id) => {
+    return await getFirestore().collection(Gallery)
+    .doc(id.toString())
+    .delete();
+} 
+
 const StoreMondayItemStatus = async (status, itemId, data) => {
     return await getFirestore().collection(MondayStatus)
         .doc(status)
@@ -262,5 +275,7 @@ module.exports = {
     StoreSupportItem,
     StoreSupportItemUpdates,
     StoreArtistAllocations,
-    DeleteInvalidArtistAllocations
+    DeleteInvalidArtistAllocations,
+    StoreGalleryItem,
+    DeleteGalleryItem
 }
