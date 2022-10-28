@@ -20,6 +20,8 @@ const getSender = () => {
     sender.verify((error, success) => {
         if (error)
             throw error;
+
+        console.log(JSON.stringify({error, success}));
     });
 
     return sender;
