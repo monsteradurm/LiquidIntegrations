@@ -30,7 +30,7 @@ const getSender = () => {
 const sendEmail = async (toAddress, subject, text, html) => {
     try {
         const sender = getSender();
-        const result = await this.sender.sendMail({
+        const result = await sender.sendMail({
             from: '"ProjectManager²" <projectmgr@liquidanimation.com>', // sender address
             to: toAddress, // list of receivers
             subject: subject, // Subject line
