@@ -9,7 +9,7 @@ const getSender = () => {
         secure: false,
         auth: {
             user: 'projectmgr@liquidanimation.com',
-            pass: 'effect-DECIDE-venus-4$_real-TAKEN-world-9='
+            pass: '7GDrG0ZtX8L3By1d3cc8vqIwuBnA7ogG7UTwyYIQ'
         },
         tls: {
                 ciphers: 'SSLv3',
