@@ -21,6 +21,8 @@ const getSender = () => {
         if (error)
             throw error;
     });
+
+    return sender;
 }
 
 const sendEmail = async (toAddress, subject, text, html) => {

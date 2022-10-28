@@ -7,7 +7,7 @@ const { TRANSFORMATION_TYPES } = require('../constants/transformation');
 async function Email(req, res) {
     try {
         const { toAddress, subject, text, html } = req.body;
-        emailService.sendEmail( toAddress, subject, text, html );
+        const result = await emailService.sendEmail( toAddress, subject, text, html );
     }
     catch (err) {
         return res.status(500).send({error: err});
