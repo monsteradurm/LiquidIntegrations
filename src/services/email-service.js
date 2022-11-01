@@ -9,7 +9,7 @@ const getSender = () => {
         secure: false,
         auth: {
             user: 'projectmgr@liquidanimation.com',
-            pass: '7GDrG0ZtX8L3By1d3cc8vqIwuBnA7ogG7UTwyYIQ'
+            pass: 'Lok98551'
         },
         tls: {
                 ciphers: 'SSLv3',
