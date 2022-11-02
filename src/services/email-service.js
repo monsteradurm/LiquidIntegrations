@@ -1,15 +1,18 @@
 /* eslint-disable */
 const nodemailer = require("nodemailer");
 const _ = require('lodash');
+const firebaseService = require('./services/firebase-service');
 
-const getSender = () => {
+const getSender = async () => {
+    const entry = await  firebaseService.GetKeyVaultEntry('projectmgr');
+    const { user, pass } = entry;   
     const sender = nodemailer.createTransport({
         host: "smtp.office365.com",
         port: 587,
         secure: false,
         auth: {
-            user: 'projectmgr@liquidanimation.com',
-            pass: 'Lok98551'
+            user,
+            pass
         },
         tls: {
                 ciphers: 'SSLv3',
@@ -29,7 +32,7 @@ const getSender = () => {
 
 const sendEmail = async (toAddress, subject, text, html) => {
     try {
-        const sender = getSender();
+        const sender = await getSender();
         const result = await sender.sendMail({
             from: '"ProjectManager²" <projectmgr@liquidanimation.com>', // sender address
             to: toAddress, // list of receivers

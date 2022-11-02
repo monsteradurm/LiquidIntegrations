@@ -16,6 +16,7 @@ const MondayStatus = 'MondayStatus';
 const ProjectMgr = 'ProjectManager';
 const Allocations = 'Allocations'
 const Gallery = 'Gallery';
+const KeyVault = 'KeyVault';
 
 const MondayProjectExists = async (projectId) => {
     const projRef = getFirestore().collection(ProjectMgr).doc(projectId.toString());
@@ -60,6 +61,17 @@ const GetUploadInfo = async (itemId) => {
         return docSnap.data();
 
     return null;
+}
+const GetKeyVaultEntry = async (key) => {
+    const docRef = getFirestore().collection(KeyVault)
+        .doc(key);
+
+    const docSnap = await docRef.get();
+
+    if (docSnap.exists) 
+        return docSnap.data();
+
+    return {error: 'no document'};
 }
 const GetSyncsketchItem = async (itemId, sketchId, groupId, projectId) => {
     const docRef = getFirestore().collection(SYNCITEMS)
@@ -277,5 +289,6 @@ module.exports = {
     StoreArtistAllocations,
     DeleteInvalidArtistAllocations,
     StoreGalleryItem,
-    DeleteGalleryItem
+    DeleteGalleryItem,
+    GetKeyVaultEntry
 }
