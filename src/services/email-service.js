@@ -1,7 +1,7 @@
 /* eslint-disable */
 const nodemailer = require("nodemailer");
 const _ = require('lodash');
-const firebaseService = require('./services/firebase-service');
+const firebaseService = require('./firebase-service');
 
 const getSender = async () => {
     const entry = await  firebaseService.GetKeyVaultEntry('projectmgr');
