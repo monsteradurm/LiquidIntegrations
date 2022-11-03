@@ -64,13 +64,27 @@ function ParseSubitemName(name) {
 function ParseItemURL(syncReview, item_id) {
     return syncReview.reviewURL + '#/' + item_id;
 }
+function ParseMaxSubitemIndex(parent) {
+    if (!parent?.subitems?.length)
+        return 0;
+
+    const values = [];
+    parent.subitems.forEach(s => {
+        const v = '00' + ParseColumnValue(s, 'Index', 'text');
+        values.push(`00${v}`.slice(-3))
+    })
+    const last = values.sort().reverse()[0];
+
+    console.log("PARSED MAX INDEX VALUE: " + values[0].toString())
+    return parseInt(last);
+}
 
 function ParseMaxSubitemValue(parent, col, attr) {
     if (!parent?.subitems?.length)
         return 0;
 
     const values = parent.subitems.map(s => parseInt(ParseColumnValue(s, col, attr)));
-    console.log("PARSED MAX COLUMN VALUE: " + values[0].toString())
+    
     return values.sort().reverse()[0];
     
 }
@@ -133,7 +147,7 @@ async function AssertSubItem(syncReview, syncItem, mondayItem, reviewDetails) {
     const subitems = mondayItem.subitems;
     const feedbackDepartment = reviewDetails.department;
 
-    let subitem_index = ParseMaxSubitemValue(mondayItem, 'Index', 'text') + 1;
+    let subitem_index = ParseMaxSubitemIndex(mondayItem) + 1;
 
     let subitem = _.find(subitems, s => s.name === name);
 
@@ -325,6 +339,7 @@ module.exports = {
     ValidateWorkspaceId,
     AssertAllStatusValid,
     ParseMaxSubitemValue,
+    ParseMaxSubitemIndex,
     ParseColumnId,
     CurrentArtist
 };
