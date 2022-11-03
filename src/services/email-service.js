@@ -4,8 +4,10 @@ const _ = require('lodash');
 const firebaseService = require('./firebase-service');
 
 const getSender = async () => {
-    const entry = await  firebaseService.GetKeyVaultEntry('projectmgr');
+    const entry = await firebaseService.GetKeyVaultEntry('projectmgr');
     const { user, pass } = entry;   
+    console.log("FOUND KEY: " + user + " > " + pass);
+    
     const sender = nodemailer.createTransport({
         host: "smtp.office365.com",
         port: 587,
