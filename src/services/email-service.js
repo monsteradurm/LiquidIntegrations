@@ -34,6 +34,7 @@ const getSender = async () => {
 
 const sendEmail = async (toAddress, subject, text, html, attachments) => {
     try {
+        console.log("Attachments: " + JSON.stringify(attachments));
         const sender = await getSender();
         const result = await sender.sendMail({
             from: '"ProjectManager²" <projectmgr@liquidanimation.com>', // sender address
