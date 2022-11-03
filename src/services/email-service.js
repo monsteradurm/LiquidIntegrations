@@ -7,7 +7,7 @@ const getSender = async () => {
     const entry = await firebaseService.GetKeyVaultEntry('projectmgr');
     const { user, pass } = entry;   
     console.log("FOUND KEY: " + user + " > " + pass);
-    
+
     const sender = nodemailer.createTransport({
         host: "smtp.office365.com",
         port: 587,
@@ -32,7 +32,7 @@ const getSender = async () => {
     return sender;
 }
 
-const sendEmail = async (toAddress, subject, text, html) => {
+const sendEmail = async (toAddress, subject, text, html, attachments) => {
     try {
         const sender = await getSender();
         const result = await sender.sendMail({
@@ -40,7 +40,8 @@ const sendEmail = async (toAddress, subject, text, html) => {
             to: toAddress, // list of receivers
             subject: subject, // Subject line
             text: text, // plain text body
-            html: html // html body
+            html: html, // html body,
+            attachments
         });
     } catch (err) {
         console.log("Error Sending Email: " + JSON.stringify(err))
