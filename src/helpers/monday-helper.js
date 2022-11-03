@@ -70,7 +70,9 @@ function ParseMaxSubitemValue(parent, col, attr) {
         return 0;
 
     const values = parent.subitems.map(s => parseInt(ParseColumnValue(s, col, attr)));
+    console.log("PARSED MAX COLUMN VALUE: " + values[0].toString())
     return values.sort().reverse()[0];
+    
 }
 const AllStatus = ['Review', 'Feedback', 'Assistance', 'In Progress'];
 
