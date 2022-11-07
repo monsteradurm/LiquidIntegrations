@@ -39,23 +39,28 @@ async function ReviewCreated(req, res) {
 }
 
 async function ReviewDeleted(req, res) {
-    const { project: {name : project_name, id: project_id }, action, review_id } = req.body;
-    if (project_name.indexOf('/') >= 0) {
-        console.log("Assumed outdated project \"Review Deleted\":" + project_name)
-        return res.status(200).send({});
+    try {
+        const { project: {name : project_name, id: project_id }, action, review_id } = req.body;
+        if (project_name.indexOf('/') >= 0) {
+            console.log("Assumed outdated project \"Review Deleted\":" + project_name)
+            return res.status(200).send({});
+        }
+
+        console.log("REVIEW DELETED HOOK");
+
+        const syncReview = await syncsketchService.GetReviewInfo(review_id);
+        const sketchId = syncsketchHelper.GetSketchId(syncReview);
+
+        if (!firebaseService.SyncsketchReviewExists(project_name, syncReview.group, sketchId) || action !== 'review_deleted')
+            return res.status(200).send({});
+
+        const result = await firebaseService.DeleteSyncsketchReview(sketchId, syncReview.group, project_id)
+
+        console.log(JSON.stringify(result));
     }
-
-    console.log("REVIEW DELETED HOOK");
-
-    const syncReview = await syncsketchService.GetReviewInfo(review_id);
-    const sketchId = syncsketchHelper.GetSketchId(syncReview);
-
-    if (!firebaseService.SyncsketchReviewExists(project_name, syncReview.group, sketchId) || action !== 'review_deleted')
-        return res.status(200).send({});
-
-    const result = await firebaseService.DeleteSyncsketchReview(sketchId, syncReview.group, project_id)
-
-    console.log(JSON.stringify(result));
+    catch (err) {
+        console.log("Crash during Sync Review Deleted: " + JSON.stringify(err));
+    }
     return res.status(200).send({});
 }
 
@@ -83,15 +88,18 @@ async function ItemDeleted(req, res) {
         return res.status(200).send({});
     }
 
-    await syncsketchHelper.StoreSyncsketchReviewData(project_id, syncReview, reviewDetails);
+    try {
+        await syncsketchHelper.StoreSyncsketchReviewData(project_id, syncReview, reviewDetails);
 
-    const uploadInfo = await firebaseService.GetUploadInfo(item_id);
-    let mondayItem = await mondayService.getItemInfo(uploadInfo?.pulse ? uploadInfo.pulse : reviewDetails.pulse);
-    
-    await mondayHelper.OnSyncitemRemoved(syncReview, mondayItem, item_name, reviewDetails);
-    await syncsketchHelper.AssertReviewName(syncReview, mondayItem, reviewDetails);
-    await syncsketchHelper.SortReviewItems(review_id);
-    
+        const uploadInfo = await firebaseService.GetUploadInfo(item_id);
+        let mondayItem = await mondayService.getItemInfo(uploadInfo?.pulse ? uploadInfo.pulse : reviewDetails.pulse);
+        
+        await mondayHelper.OnSyncitemRemoved(syncReview, mondayItem, item_name, reviewDetails);
+        await syncsketchHelper.AssertReviewName(syncReview, mondayItem, reviewDetails);
+        await syncsketchHelper.SortReviewItems(review_id);
+    } catch (err) {
+        console.log("CRASH during Sync Item Deleted!" + JSON.stringify(err));
+    }
     return res.status(200).send({});
 }
 
@@ -118,10 +126,14 @@ async function ItemStatusChanged(req, res) {
         return res.status(200).send({});
     }
 
-    await syncsketchHelper.StoreSyncsketchReviewData(project_id, syncReview, reviewDetails);
-    await syncsketchHelper.StoreSyncsketchItemData(project_id, syncReview, syncItem, reviewDetails);
-    await syncsketchHelper.SortReviewItems(review_id);
-
+    try {
+        await syncsketchHelper.StoreSyncsketchReviewData(project_id, syncReview, reviewDetails);
+        await syncsketchHelper.StoreSyncsketchItemData(project_id, syncReview, syncItem, reviewDetails);
+        await syncsketchHelper.SortReviewItems(review_id);
+    }
+    catch (err) {
+        console.log("CRASH during Sync Item Status Changed!" + JSON.stringify(err));
+    }
     return res.status(200).send({});
 }
 
@@ -143,25 +155,29 @@ async function ItemCreated(req, res) {
       console.log("Could not parse Review Details in review description (JSON)")
       return res.status(200).send({});
   }
+  try {
+    await syncsketchHelper.StoreSyncsketchReviewData(project.id, syncReview, reviewDetails);
+    await syncsketchHelper.StoreSyncsketchItemData(project.id, syncReview, syncItem, reviewDetails);
+    
+    if (uploadInfo) {
+        console.log("Upload Info Exists")
+        console.log(uploadInfo);
+    } else {
+        console.log("Could not find upload info");
+    }
 
-  await syncsketchHelper.StoreSyncsketchReviewData(project.id, syncReview, reviewDetails);
-  await syncsketchHelper.StoreSyncsketchItemData(project.id, syncReview, syncItem, reviewDetails);
+    let mondayItem = await mondayService.getItemInfo(
+        uploadInfo?.pulse ? uploadInfo.pulse : reviewDetails.pulse
+    );
+
+    await mondayHelper.AssertSubItem(syncReview, syncItem, mondayItem, reviewDetails);
+    await syncsketchHelper.AssertReviewName(syncReview, mondayItem, reviewDetails);
+    await syncsketchHelper.SortReviewItems(review_id);
   
-  if (uploadInfo) {
-      console.log("Upload Info Exists")
-      console.log(uploadInfo);
-  } else {
-      console.log("Could not find upload info");
   }
-
-  let mondayItem = await mondayService.getItemInfo(
-      uploadInfo?.pulse ? uploadInfo.pulse : reviewDetails.pulse
-  );
-
-  await mondayHelper.AssertSubItem(syncReview, syncItem, mondayItem, reviewDetails);
-  await syncsketchHelper.AssertReviewName(syncReview, mondayItem, reviewDetails);
-  await syncsketchHelper.SortReviewItems(review_id);
-  
+  catch (err) {
+    console.log("CRASH during Sync Item Created!" + JSON.stringify(err));
+    }
   return res.status(200).send({});
 }
 
