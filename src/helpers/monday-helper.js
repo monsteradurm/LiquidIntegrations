@@ -34,6 +34,7 @@ async function SubitemRenamed(subitem, mondayItem, name, previousName) {
 }
 
 function ParseSubitemName(name) {
+    console.log("PARSING SUBITEM NAME: " + name);
     let nameArr = name.split(' ');
     const department = nameArr[0];
     nameArr.shift();
