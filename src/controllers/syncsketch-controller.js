@@ -140,13 +140,14 @@ async function ItemStatusChanged(req, res) {
 async function ItemCreated(req, res) {
   
   const { item_name, project, item_id } = req.body;
+  console.log("ITEM CREATED HOOK: " + item_name)
   const review_id = req.body.review.id;
 
   const syncReview = await syncsketchService.GetReviewInfo(review_id);
   const syncItem = await syncsketchService.GetItemInfo(item_id);
   const uploadInfo = await firebaseService.GetUploadInfo(item_id);
 
-
+  console.log(JSON.stringify(syncItem));
   let reviewDetails;
   try {
     reviewDetails = JSON.parse(syncReview.description);
