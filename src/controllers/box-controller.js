@@ -1,8 +1,10 @@
 const firebaseService = require('../services/firebase-service');
+const bunyan = require('bunyan');
+const logger = bunyan.createLogger({ name: 'EmailController', level: 'info' });
 
 async function GalleryWehook(req, res) {
     try {
-        console.log(JSON.stringify(req.body));
+        logger.info(JSON.stringify(req.body));
 
         const {trigger, source } = req.body;
         const id = source.id;
@@ -25,7 +27,7 @@ async function GalleryWehook(req, res) {
             }
         }
     } catch (err) {
-        console.log("Could not execute Gallery Webhook: " + JSON.stringify(err));
+        logger.info("Could not execute Gallery Webhook: " + JSON.stringify(err));
     }
 
     return res.status(200).send({});

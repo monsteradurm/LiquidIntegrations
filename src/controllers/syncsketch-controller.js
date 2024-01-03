@@ -5,36 +5,40 @@ const syncsketchHelper = require('../helpers/syncsketch-helper');
 const firebaseService = require('../services/firebase-service');
 
 const _ = require('lodash');
+const bunyan = require('bunyan');
+const logger = bunyan.createLogger({ name: 'SyncsketchController', level: 'info' });
+
+const _ = require('lodash');
 const e = require('express');
 
 async function ReviewCreated(req, res) {
     const { project: {name : project_name, id: project_id }, action, review_id } = req.body;
     if (project_name.indexOf('/') >= 0) {
-        console.log("Assumed outdated project \"Review Created\":" + project_name)
+        logger.info("Assumed outdated project \"Review Created\":" + project_name)
         return res.status(200).send({});
     }
-    console.log("Review Created HOOK");
+    logger.info("Review Created HOOK");
     
     if (!firebaseService.MondayProjectExists(project_name) || action !== 'review_created')
         return res.status(200).send({});
 
-    console.log("FINDING REVIEW: " + review_id)
+    logger.info("FINDING REVIEW: " + review_id)
     const syncReview = await syncsketchService.GetReviewInfo(review_id);
 
-    console.log("SYNC REVIEW: ");
-    console.log(JSON.stringify(syncReview));
+    logger.info("SYNC REVIEW: ");
+    logger.info(JSON.stringify(syncReview));
 
     let reviewDetails;
     try {
         reviewDetails = JSON.parse(syncReview.description);
     }
     catch { 
-        console.log("Could not parse Review Details in review description (JSON)")
+        logger.info("Could not parse Review Details in review description (JSON)")
         return res.status(200).send({});
     }
 
     const result = await syncsketchHelper.StoreSyncsketchReviewData(project_id, syncReview, reviewDetails);
-    console.log(JSON.stringify(result));
+    logger.info(JSON.stringify(result));
     return res.status(200).send({});
 }
 
@@ -42,11 +46,11 @@ async function ReviewDeleted(req, res) {
     try {
         const { project: {name : project_name, id: project_id }, action, review_id } = req.body;
         if (project_name.indexOf('/') >= 0) {
-            console.log("Assumed outdated project \"Review Deleted\":" + project_name)
+            logger.info("Assumed outdated project \"Review Deleted\":" + project_name)
             return res.status(200).send({});
         }
 
-        console.log("REVIEW DELETED HOOK");
+        logger.info("REVIEW DELETED HOOK");
 
         const syncReview = await syncsketchService.GetReviewInfo(review_id);
         const sketchId = syncsketchHelper.GetSketchId(syncReview);
@@ -56,17 +60,17 @@ async function ReviewDeleted(req, res) {
 
         const result = await firebaseService.DeleteSyncsketchReview(sketchId, syncReview.group, project_id)
 
-        console.log(JSON.stringify(result));
+        logger.info(JSON.stringify(result));
     }
     catch (err) {
-        console.log("Crash during Sync Review Deleted: " + JSON.stringify(err));
+        logger.info("Crash during Sync Review Deleted: " + JSON.stringify(err));
     }
     return res.status(200).send({});
 }
 
 async function ItemDeleted(req, res) {
     
-    console.log("ITEM DELETED HOOK");
+    logger.info("ITEM DELETED HOOK");
     const { item_name, item_id, review_id } = req.body;
     
     
@@ -84,7 +88,7 @@ async function ItemDeleted(req, res) {
         reviewDetails = JSON.parse(syncReview.description);
     }
     catch { 
-        console.log("Could not parse Review Details in review description (JSON)")
+        logger.info("Could not parse Review Details in review description (JSON)")
         return res.status(200).send({});
     }
 
@@ -98,19 +102,19 @@ async function ItemDeleted(req, res) {
         await syncsketchHelper.AssertReviewName(syncReview, mondayItem, reviewDetails);
         await syncsketchHelper.SortReviewItems(review_id);
     } catch (err) {
-        console.log("CRASH during Sync Item Deleted!" + JSON.stringify(err));
+        logger.info("CRASH during Sync Item Deleted!" + JSON.stringify(err));
     }
     return res.status(200).send({});
 }
 
 async function ItemStatusChanged(req, res) {
-    console.log("ITEM STATUS CHANGED" );
+    logger.info("ITEM STATUS CHANGED" );
     const { project: {name : project_name, id: project_id }, 
             review: { id: review_id, name: review_name }, 
             item_id } = req.body;
 
     if (project_name.indexOf('/') >= 0) {
-        console.log("Assumed outdated project \"ITEM STATUS UPDATED\":" + project_name)
+        logger.info("Assumed outdated project \"ITEM STATUS UPDATED\":" + project_name)
         return res.status(200).send({});
     }
 
@@ -122,7 +126,7 @@ async function ItemStatusChanged(req, res) {
         reviewDetails = JSON.parse(syncReview.description);
     }
     catch { 
-        console.log("Could not parse Review Details in review description (JSON)")
+        logger.info("Could not parse Review Details in review description (JSON)")
         return res.status(200).send({});
     }
 
@@ -132,7 +136,7 @@ async function ItemStatusChanged(req, res) {
         await syncsketchHelper.SortReviewItems(review_id);
     }
     catch (err) {
-        console.log("CRASH during Sync Item Status Changed!" + JSON.stringify(err));
+        logger.info("CRASH during Sync Item Status Changed!" + JSON.stringify(err));
     }
     return res.status(200).send({});
 }
@@ -140,20 +144,20 @@ async function ItemStatusChanged(req, res) {
 async function ItemCreated(req, res) {
   
   const { item_name, project, item_id } = req.body;
-  console.log("ITEM CREATED HOOK: " + item_name)
+  logger.info("ITEM CREATED HOOK: " + item_name)
   const review_id = req.body.review.id;
 
   const syncReview = await syncsketchService.GetReviewInfo(review_id);
   const syncItem = await syncsketchService.GetItemInfo(item_id);
   const uploadInfo = await firebaseService.GetUploadInfo(item_id);
 
-  console.log(JSON.stringify(syncItem));
+  logger.info(JSON.stringify(syncItem));
   let reviewDetails;
   try {
     reviewDetails = JSON.parse(syncReview.description);
   }
   catch { 
-      console.log("Could not parse Review Details in review description (JSON)")
+      logger.info("Could not parse Review Details in review description (JSON)")
       return res.status(200).send({});
   }
   try {
@@ -161,10 +165,10 @@ async function ItemCreated(req, res) {
     await syncsketchHelper.StoreSyncsketchItemData(project.id, syncReview, syncItem, reviewDetails);
     
     if (uploadInfo) {
-        console.log("Upload Info Exists")
-        console.log(uploadInfo);
+        logger.info("Upload Info Exists")
+        logger.info(uploadInfo);
     } else {
-        console.log("Could not find upload info");
+        logger.info("Could not find upload info");
     }
 
     let mondayItem = await mondayService.getItemInfo(
@@ -177,7 +181,7 @@ async function ItemCreated(req, res) {
   
   }
   catch (err) {
-    console.log("CRASH during Sync Item Created!" + JSON.stringify(err));
+    logger.info("CRASH during Sync Item Created!" + JSON.stringify(err));
     }
   return res.status(200).send({});
 }

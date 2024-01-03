@@ -12,29 +12,29 @@ async function FindSyncReview(mondayItem, subitem, review_name) {
     if (syncReview)
         syncReview;
 
-    console.log("Could not find Review: " + review_name + ", " + mondayItem.id);
+    logger.info("Could not find Review: " + review_name + ", " + mondayItem.id);
     return null;
 }
 
 async function SubitemRenamed(subitem, mondayItem, name, previousName) {
-    console.log("Subitem renamed from: " + previousName + ", to: " + name)
+    logger.info("Subitem renamed from: " + previousName + ", to: " + name)
     const syncReview = await FindSyncReview(mondayItem, subitem);
 
     if (!syncReview) {
         return;
     }
 
-    console.log("Found SyncReview Id: " + syncReview.id);
+    logger.info("Found SyncReview Id: " + syncReview.id);
 
     const reviewItems = syncsketchService.GetReviewItems(syncReview.id);
     
-    //console.log("Found Items: ");
-    //console.log(reviewItems.map(s => s.name));
+    //logger.info("Found Items: ");
+    //logger.info(reviewItems.map(s => s.name));
 
 }
 
 function ParseSubitemName(name) {
-    console.log("PARSING SUBITEM NAME: " + name);
+    logger.info("PARSING SUBITEM NAME: " + name);
     let nameArr = name.split(' ');
     const department = nameArr[0];
     nameArr.shift();
@@ -76,7 +76,7 @@ function ParseMaxSubitemIndex(parent) {
     })
     const last = values.sort().reverse()[0];
 
-    console.log("PARSED MAX INDEX VALUE: " + values[0].toString())
+    logger.info("PARSED MAX INDEX VALUE: " + values[0].toString())
     return parseInt(last);
 }
 
@@ -138,7 +138,7 @@ function CurrentArtist(item) {
             }
         }
 
-        console.log("CurrentArtist: " + JSON.stringify({reviewArtist, itemArtist, reassigned}))
+        logger.info("CurrentArtist: " + JSON.stringify({reviewArtist, itemArtist, reassigned}))
         if (!!reviewArtist || !!reassigned) return reviewArtist
         return itemArtist;
 }
@@ -159,7 +159,7 @@ async function AssertSubItem(syncReview, syncItem, mondayItem, reviewDetails) {
         if (link_id)
             await mondayService.setColumnValue(subitem.board.id, subitem.id, link_id, url);
         else 
-            console.log("Could not find \"Link\" Column");
+            logger.info("Could not find \"Link\" Column");
 
         const index = ParseColumnValue(subitem, 'Index', 'text');
         if (index)
@@ -213,14 +213,14 @@ function FindSubitem(item_name, subitems, feedbackDepartment) {
             const dep = ParseColumnValue(s, 'Feedback Department', 'text');
 
             if (dep !== feedbackDepartment) {
-                console.log("Doesnt match: " + feedbackDepartment + ", " + dep);
+                logger.info("Doesnt match: " + feedbackDepartment + ", " + dep);
                 return false;
             }
             return true;
     });
 
     if (subitem) {
-        console.log("FOUND SUBITEM: " + subitem.name);
+        logger.info("FOUND SUBITEM: " + subitem.name);
         return subitem;
     }
 
@@ -253,7 +253,7 @@ async function OnSyncitemRemoved(syncReview, mondayItem, item_name, reviewDetail
     const linkCol = ParseColumnId(subitem, 'Link');
 
     if (!linkCol) {
-        console.log("COULD NOT FIND LINK COLUMN: ", subitem.id);
+        logger.info("COULD NOT FIND LINK COLUMN: ", subitem.id);
         return;
     }
     await mondayService.setColumnValue(subitem.board.id, subitem.id, linkCol, url);
@@ -288,8 +288,8 @@ function ParseMaxColumnValue(parent, title, attr) {
 function ParseColumnValue(parent, title, attr) {
     if (!parent || !parent.column_values)
         return null;
-    //console.log("LOOKING FOR " + title + ", " + attr);
-    //console.log(parent.column_values);
+    //logger.info("LOOKING FOR " + title + ", " + attr);
+    //logger.info(parent.column_values);
 
     const col = _.find(parent.column_values, c => c.title === title);
     return col[attr];
@@ -298,7 +298,7 @@ function ParseColumnValue(parent, title, attr) {
 
 async function AssertStatusItemsValid(Status) {
     const ids = await firebaseService.GetStatusIds(Status);
-    console.log(`Validifying Status Ids (${Status}): ` + JSON.stringify(ids));
+    logger.info(`Validifying Status Ids (${Status}): ` + JSON.stringify(ids));
 
     const grouped = []
 
@@ -314,11 +314,11 @@ async function AssertStatusItemsValid(Status) {
         const invalid = await mondayService.GetInvalidItemStates(g, Status);
         
         if (invalid.length > 0) {
-            console.log(`Found Invalid State (${Status}) `)// + JSON.stringify(invalid));
+            logger.info(`Found Invalid State (${Status}) `)// + JSON.stringify(invalid));
             await firebaseService.DeleteMultipleStatus(Status, invalid)
         }
         else {
-            console.log(`Found no Invalid State: (${Status})`)
+            logger.info(`Found no Invalid State: (${Status})`)
         }
     })
 }

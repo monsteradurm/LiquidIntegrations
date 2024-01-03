@@ -73,7 +73,7 @@ async function StoreSyncsketchItemData(project_id, syncReview, syncItem, reviewD
 
 async function SortReviewItems(review_id) {
     const items = await syncsketchService.GetReviewItems(review_id);
-    console.log("Sorting Items From Review", review_id)
+    logger.info("Sorting Items From Review", review_id)
 
     const sortedValues = _.reduce(
         _.sortBy( items, i => i.name), 
