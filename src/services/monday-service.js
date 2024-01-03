@@ -516,7 +516,44 @@ const changeColumnValue = async (token, boardId, itemId, columnId, value) => {
   }
 };
 
+const GetInvalidItemStates = async (ids, status) => {
+  if (ids.length < 1)
+    return [];
 
+  logger.info(`QUERYING ITEMS (${status}): ` + JSON.stringify(ids))
+  const mondayClient = MondayClient();
+  const query = `query { items (ids: [${ids.join(', ')}] limit:100) {
+  	  id state
+      column_values { title text }
+	  }
+  }`
+
+  const response = await Execute(mondayClient, query);
+  //logger.info("INVALID: " + JSON.stringify(response) )
+  const invalid = response.data.items.filter(i => {
+    if (i.state !== 'active')
+      return true; 
+
+    const columns = i.column_values;
+    //logger.info("FOUND COLUMN VALUES ?" + JSON.stringify(columns))
+
+    if (!columns) return true;
+
+    const statusCols = columns.filter(c => c.title === 'Status');
+    if (statusCols.length < 1)
+      return true;
+      
+    const statusCol = statusCols[0].text;
+    //logger.info("Checking " + statusCol + " === " + status + " " + statusCol.indexOf(status.toString()) < 0);
+
+    if (statusCol.indexOf(status) < 0)
+      return true;
+
+    return false;
+  }).map(i => i.id);
+  return invalid;
+
+}
 module.exports = {
   getItemInfo,
   getMinimumItemInfo,
