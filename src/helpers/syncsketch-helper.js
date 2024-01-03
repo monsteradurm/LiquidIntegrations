@@ -3,6 +3,9 @@ const syncsketchService = require('../services/syncsketch-service');
 const firebaseService = require('../services/firebase-service');
 const _ = require('lodash');
 
+const bunyan = require('bunyan');
+const logger = bunyan.createLogger({ name: 'SyncsketchHelper', level: 'info' });
+
 function ParseReviewName(mondayItem, fbDepartment) {
     const group = mondayItem.group.title;
     let element = mondayItem.name;

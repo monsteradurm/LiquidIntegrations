@@ -1,6 +1,9 @@
 const localtunnel = require('localtunnel');
 const MAX_RETRIES = 5;
 
+const bunyan = require('bunyan');
+const logger = bunyan.createLogger({ name: 'TunnelHelper', level: 'info' });
+
 const createTunnel = async (port, retries = 0) => {
   const tunnel = await localtunnel({
     host: process.env.TUNNEL_SERVER_HOST,

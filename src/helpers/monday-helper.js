@@ -2,6 +2,9 @@ const mondayService = require('../services/monday-service');
 const syncsketchService = require('../services/syncsketch-service');
 const firebaseService = require('../services/firebase-service');
 
+const bunyan = require('bunyan');
+const logger = bunyan.createLogger({ name: 'MondayHelper', level: 'info' });
+
 const _ = require('lodash');
 
 async function FindSyncReview(mondayItem, subitem, review_name) {

@@ -1,6 +1,6 @@
 const firebaseService = require('../services/firebase-service');
 const bunyan = require('bunyan');
-const logger = bunyan.createLogger({ name: 'EmailController', level: 'info' });
+const logger = bunyan.createLogger({ name: 'BoxController', level: 'info' });
 
 async function GalleryWehook(req, res) {
     try {
