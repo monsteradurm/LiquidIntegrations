@@ -175,13 +175,11 @@ const getMinimumItemInfo = async (itemId) => {
   logger.info('Retrieving minimum item info', { itemId });
   const mondayClient = MondayClient();
   const query = `query { 
-    items_page (ids: [${itemId}]) {
-      items {
+      items (ids: [${itemId}]) {
         id
         name
         board { id name workspace_id description }
         group { id title }
-      }
     }
   }`;
 
@@ -204,8 +202,7 @@ const getItemInfo = async (itemId) => {
   logger.info('Retrieving full item info', { itemId });
   const mondayClient = MondayClient();
   const query = `query { 
-    items_page (ids: [${itemId}]) {
-      items {
+      items (ids: [${itemId}]) {
         id
         name
         state
@@ -213,16 +210,14 @@ const getItemInfo = async (itemId) => {
         group { id title }
         column_values {
           id
-          ...on MirrorValue {
-            display_value
+          value
+          text
+          column {
+            settings_str
+            title
+            description
+            type
           }
-          ...on DependencyValue {
-            display_value
-          }
-          ...on BoardRelationValue {
-            display_value
-          }
-          additional_info title value type
         }
         subitems {
           board { id name }
@@ -230,20 +225,17 @@ const getItemInfo = async (itemId) => {
           name
           column_values {
             id
-            ...on MirrorValue {
-              display_value
+            value
+            text
+            column {
+              settings_str
+              title
+              description
+              type
             }
-            ...on DependencyValue {
-              display_value
-            }
-            ...on BoardRelationValue {
-              display_value
-            }
-            additional_info title value type
           }
         }
       }
-    }
   }`;
 
   try {
