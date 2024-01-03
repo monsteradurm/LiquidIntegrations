@@ -4,7 +4,7 @@ const logger = bunyan.createLogger({ name: 'MondayService', level: 'info' });
 
 const MondayClient = () => {
   const monday = initMondayClient();
-  monday.setToken('your_token_here');
+  monday.setToken('eyJhbGciOiJIUzI1NiJ9.eyJ0aWQiOjEwNDEzNzg0NSwidWlkIjoxNjMzMzQ1LCJpYWQiOiIyMDIxLTAzLTI0VDA2OjA1OjAzLjU2MFoiLCJwZXIiOiJtZTp3cml0ZSIsImFjdGlkIjo2OTc5NzksInJnbiI6InVzZTEifQ.F33TvuwKuKzIyipXblbTRrlJ2aAtVA3C9ZPVCZKsIAc');
   logger.info('Monday client initialized');
   return monday;
 }
