@@ -5,15 +5,18 @@ const logger = bunyan.createLogger({ name: 'MondayService', level: 'info' });
 const MondayClient = () => {
   const monday = initMondayClient();
   monday.setToken('your_token_here');
+  logger.info('Monday client initialized');
   return monday;
 }
 
 const Execute = async (mondayClient, cmd, variables) => {
   try {
+    logger.info({ cmd, variables }, 'Executing Monday API command');
     const result = await mondayClient.api(cmd, variables);
     if (result.error_code) {
       logger.warn({ cmd, result }, 'API returned an error code');
-      // Handle specific error codes if necessary
+    } else {
+      logger.info({ cmd, result }, 'API command executed successfully');
     }
     return result;
   } catch (error) {
@@ -48,13 +51,17 @@ const getSubitemInfo = async (itemId) => {
   }`;
 
   try {
+    logger.info({ itemId }, 'Retrieving subitem info');
     const response = await Execute(mondayClient, query);
     if (response?.data?.items_page?.items) {
+      logger.info({ itemId, response: response.data.items_page.items[0] }, 'Subitem info retrieved successfully');
       return response.data.items_page.items[0];
+    } else {
+      logger.warn({ itemId }, 'No subitems found');
+      throw new Error('No subitems found');
     }
-    throw new Error('No items found');
   } catch (err) {
-    logger.error({ err }, 'Error retrieving subitem info');
+    logger.error({ err, itemId }, 'Error retrieving subitem info');
     throw err;
   }
 }
@@ -164,10 +171,9 @@ const getSupportItemInfo = async (itemId) => {
     throw err;
   }
 }
-
 const getMinimumItemInfo = async (itemId) => {
+  logger.info('Retrieving minimum item info', { itemId });
   const mondayClient = MondayClient();
-  // Updated query to use items_page
   const query = `query { 
     items_page (ids: [${itemId}]) {
       items {
@@ -181,22 +187,22 @@ const getMinimumItemInfo = async (itemId) => {
 
   try {
     const response = await Execute(mondayClient, query);
-
     if (response?.data?.items_page?.items) {
+      logger.info({ itemId, item: response.data.items_page.items[0] }, 'Minimum item info retrieved successfully');
       return response.data.items_page.items[0];
     } else {
-      throw new Error('Item not found');
+      logger.warn({ itemId }, 'Minimum item info not found');
+      throw new Error('Minimum item info not found');
     }
   } catch (err) {
-    logger.error({ err, itemId }, 'Error retrieving Monday Item info');
+    logger.error({ err, itemId }, 'Error retrieving minimum item info');
     throw err;
   }
 }
 
 const getItemInfo = async (itemId) => {
-  logger.info("Retrieving item info", { itemId });
+  logger.info('Retrieving full item info', { itemId });
   const mondayClient = MondayClient();
-  // Updated query to use items_page and handle column_values
   const query = `query { 
     items_page (ids: [${itemId}]) {
       items {
@@ -243,17 +249,18 @@ const getItemInfo = async (itemId) => {
   try {
     const response = await Execute(mondayClient, query);
     const items = response?.data?.items_page?.items || [];
-
     if (items.length < 1) {
-      throw new Error('Item not found');
+      logger.warn({ itemId }, 'Full item info not found');
+      throw new Error('Full item info not found');
     }
-
+    logger.info({ itemId, item: items[0] }, 'Full item info retrieved successfully');
     return items[0];
   } catch (err) {
-    logger.error({ err, itemId }, 'Error retrieving Monday Item info');
+    logger.error({ err, itemId }, 'Error retrieving full item info');
     throw err;
   }
 }
+
 
 const deleteUpdate = async (itemId) => {
   const mondayClient = MondayClient();

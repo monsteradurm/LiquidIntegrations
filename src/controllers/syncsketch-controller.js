@@ -141,49 +141,49 @@ async function ItemStatusChanged(req, res) {
 }
 
 async function ItemCreated(req, res) {
+    const { item_name, project, item_id } = req.body;
+    logger.info("ITEM CREATED HOOK", { item_name, project, item_id });
   
-  const { item_name, project, item_id } = req.body;
-  logger.info("ITEM CREATED HOOK: " + item_name)
-  const review_id = req.body.review.id;
-
-  const syncReview = await syncsketchService.GetReviewInfo(review_id);
-  const syncItem = await syncsketchService.GetItemInfo(item_id);
-  const uploadInfo = await firebaseService.GetUploadInfo(item_id);
-
-  logger.info(JSON.stringify(syncItem));
-  let reviewDetails;
-  try {
-    reviewDetails = JSON.parse(syncReview.description);
-  }
-  catch { 
-      logger.info("Could not parse Review Details in review description (JSON)")
+    const review_id = req.body.review.id;
+  
+    try {
+      const syncReview = await syncsketchService.GetReviewInfo(review_id);
+      const syncItem = await syncsketchService.GetItemInfo(item_id);
+      const uploadInfo = await firebaseService.GetUploadInfo(item_id);
+  
+      logger.info("Syncsketch Item Info", { syncItem });
+  
+      let reviewDetails;
+      try {
+        reviewDetails = JSON.parse(syncReview.description);
+      } catch (err) {
+        logger.error("Error parsing review details", { err, syncReview });
+        return res.status(200).send({});
+      }
+  
+      await syncsketchHelper.StoreSyncsketchReviewData(project.id, syncReview, reviewDetails);
+      await syncsketchHelper.StoreSyncsketchItemData(project.id, syncReview, syncItem, reviewDetails);
+  
+      if (uploadInfo) {
+        logger.info("Upload Info Exists", { uploadInfo });
+      } else {
+        logger.warn("Upload info not found", { item_id });
+      }
+  
+      let mondayItem = await mondayService.getItemInfo(uploadInfo?.pulse ? uploadInfo.pulse : reviewDetails.pulse);
+  
+      await mondayHelper.AssertSubItem(syncReview, syncItem, mondayItem, reviewDetails);
+      await syncsketchHelper.AssertReviewName(syncReview, mondayItem, reviewDetails);
+      await syncsketchHelper.SortReviewItems(review_id);
+  
+      logger.info("Item created process completed successfully");
       return res.status(200).send({});
-  }
-  try {
-    await syncsketchHelper.StoreSyncsketchReviewData(project.id, syncReview, reviewDetails);
-    await syncsketchHelper.StoreSyncsketchItemData(project.id, syncReview, syncItem, reviewDetails);
-    
-    if (uploadInfo) {
-        logger.info("Upload Info Exists")
-        logger.info(uploadInfo);
-    } else {
-        logger.info("Could not find upload info");
+    } catch (err) {
+      logger.error("Error during Sync Item Created", { err });
+      return res.status(500).send({ error: err.message });
     }
-
-    let mondayItem = await mondayService.getItemInfo(
-        uploadInfo?.pulse ? uploadInfo.pulse : reviewDetails.pulse
-    );
-
-    await mondayHelper.AssertSubItem(syncReview, syncItem, mondayItem, reviewDetails);
-    await syncsketchHelper.AssertReviewName(syncReview, mondayItem, reviewDetails);
-    await syncsketchHelper.SortReviewItems(review_id);
+  }
   
-  }
-  catch (err) {
-    logger.info("CRASH during Sync Item Created!" + JSON.stringify(err));
-    }
-  return res.status(200).send({});
-}
 
 module.exports = {
     ItemCreated,
