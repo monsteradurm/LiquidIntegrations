@@ -35,16 +35,14 @@ const getSubitemInfo = async (itemId) => {
         board { id name }
         column_values {
           id
-          ...on MirrorValue {
-            display_value
+          value
+          text
+          column {
+            settings_str
+            title
+            description
+            type
           }
-          ...on DependencyValue {
-            display_value
-          }
-          ...on BoardRelationValue {
-            display_value
-          }
-          additional_info title value type
         }
       }
     }
@@ -141,16 +139,14 @@ const getSupportItemInfo = async (itemId) => {
         group { id title }
         column_values {
           id
-          ...on MirrorValue {
-            display_value
+          value
+          text
+          column {
+            settings_str
+            title
+            description
+            type
           }
-          ...on DependencyValue {
-            display_value
-          }
-          ...on BoardRelationValue {
-            display_value
-          }
-          additional_info title value type
         }
         created_at
         updated_at
@@ -313,16 +309,14 @@ const createSubitem = async (itemId, name) => {
       id
       column_values {
         id
-        ...on MirrorValue {
-          display_value
+        value
+        text
+        column {
+          settings_str
+          title
+          description
+          type
         }
-        ...on DependencyValue {
-          display_value
-        }
-        ...on BoardRelationValue {
-          display_value
-        }
-        additional_info title value type
       }
       board { id }
     }
@@ -379,16 +373,14 @@ const ForceComplexityError = async () => {
         group { id title }
         column_values {
           id
-          ...on MirrorValue {
-            display_value
+          value
+          text
+          column {
+            settings_str
+            title
+            description
+            type
           }
-          ...on DependencyValue {
-            display_value
-          }
-          ...on BoardRelationValue {
-            display_value
-          }
-          additional_info title value type
         }
         subitems {
           id
@@ -396,16 +388,14 @@ const ForceComplexityError = async () => {
           board { id name }
           column_values {
             id
-            ...on MirrorValue {
-              display_value
+            value
+            text
+            column {
+              settings_str
+              title
+              description
+              type
             }
-            ...on DependencyValue {
-              display_value
-            }
-            ...on BoardRelationValue {
-              display_value
-            }
-            additional_info title value type
           }
         }
       }
