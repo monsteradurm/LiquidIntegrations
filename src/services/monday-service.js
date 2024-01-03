@@ -28,8 +28,7 @@ const Execute = async (mondayClient, cmd, variables) => {
 const getSubitemInfo = async (itemId) => {
   const mondayClient = MondayClient();
   const query = `query { 
-    items_page (ids: [${itemId}]) {
-      items {
+      items (ids: [${itemId}]) {
         id
         name
         board { id name }
@@ -45,15 +44,14 @@ const getSubitemInfo = async (itemId) => {
           }
         }
       }
-    }
   }`;
 
   try {
     logger.info({ itemId }, 'Retrieving subitem info');
     const response = await Execute(mondayClient, query);
-    if (response?.data?.items_page?.items) {
-      logger.info({ itemId, response: response.data.items_page.items[0] }, 'Subitem info retrieved successfully');
-      return response.data.items_page.items[0];
+    if (response?.data?.items) {
+      logger.info({ itemId, response: response.data.items[0] }, 'Subitem info retrieved successfully');
+      return response.data.items[0];
     } else {
       logger.warn({ itemId }, 'No subitems found');
       throw new Error('No subitems found');
@@ -66,24 +64,18 @@ const getSubitemInfo = async (itemId) => {
 
 const GetBoard = async (boardId) => {
   const mondayClient = MondayClient();
-  // Updated query to use items_page
   const query = `query { 
     boards (ids: ${boardId}) {
-      items_page {
-        items {
-          workspace_id
-          name
-          description
-        }
-      }
+      workspace_id
+      name description
     }
   }`;
 
   try {
     const response = await Execute(mondayClient, query);
 
-    if (response?.data?.boards?.items_page?.items) {
-      const board = response.data.boards.items_page.items[0];
+    if (response?.data?.boards) {
+      const board = response.data.boards[0];
       return board;
     } else {
       throw new Error('Board not found');
@@ -103,9 +95,15 @@ const getSupportBoardInfo = async (boardId) => {
         items {
           id 
           name
-          groups { id title }
-          columns {
-            id title settings_str
+          group {
+            id title
+          }
+					column_values{
+            id text value
+            column {
+              title
+              settings_str
+            }
           }
         }
       }
@@ -129,10 +127,8 @@ const getSupportBoardInfo = async (boardId) => {
 
 const getSupportItemInfo = async (itemId) => {
   const mondayClient = MondayClient();
-  // Updated query to use items_page and handle column_values
   const query = `query { 
-    items_page (ids: [${itemId}]) {
-      items {
+      items (ids: [${itemId}]) {
         id
         name
         board { id name }
@@ -151,14 +147,13 @@ const getSupportItemInfo = async (itemId) => {
         created_at
         updated_at
       }
-    }
   }`;
 
   try {
     const response = await Execute(mondayClient, query);
 
-    if (response?.data?.items_page?.items) {
-      return response.data.items_page.items[0];
+    if (response?.data?.items) {
+      return response.data.items[0];
     } else {
       throw new Error('Item not found');
     }
@@ -181,9 +176,9 @@ const getMinimumItemInfo = async (itemId) => {
 
   try {
     const response = await Execute(mondayClient, query);
-    if (response?.data?.items_page?.items) {
-      logger.info({ itemId, item: response.data.items_page.items[0] }, 'Minimum item info retrieved successfully');
-      return response.data.items_page.items[0];
+    if (response?.data?.items) {
+      logger.info({ itemId, item: response.data.items[0] }, 'Minimum item info retrieved successfully');
+      return response.data.items[0];
     } else {
       logger.warn({ itemId }, 'Minimum item info not found');
       throw new Error('Minimum item info not found');
@@ -236,7 +231,7 @@ const getItemInfo = async (itemId) => {
 
   try {
     const response = await Execute(mondayClient, query);
-    const items = response?.data?.items_page?.items || [];
+    const items = response?.data?.items || [];
     if (items.length < 1) {
       logger.warn({ itemId }, 'Full item info not found');
       throw new Error('Full item info not found');
@@ -275,8 +270,7 @@ const deleteUpdate = async (itemId) => {
 const getUpdateInfo = async (itemId) => {
   const mondayClient = MondayClient();
   const query = `query {
-    items_page (ids: ${itemId}) {
-      items {
+      items (ids: ${itemId}) {
         updates {
           id created_at updated_at body
           replies {
@@ -284,14 +278,13 @@ const getUpdateInfo = async (itemId) => {
           }
         }
       }
-    }
   }`;
 
   try {
     const response = await Execute(mondayClient, query);
 
-    if (response?.data?.items_page?.items) {
-      return response.data.items_page.items[0]?.updates;
+    if (response?.data?.items) {
+      return response.data.items[0]?.updates;
     } else {
       throw new Error('Updates not found');
     }
@@ -341,18 +334,16 @@ const getColumnValue = async (token, itemId, columnId) => {
     mondayClient.setToken(token);
 
     const query = `query {
-      items_page (ids: [${itemId}]) {
-        items {
+        items (ids: [${itemId}]) {
           column_values(ids:[${columnId}]) {
             value
           }
         }
-      }
     }`;
 
     const response = await Execute(mondayClient, query);
-    if (response?.data?.items_page?.items) {
-      return response.data.items_page.items[0].column_values[0].value;
+    if (response?.data?.items) {
+      return response.data.items[0].column_values[0].value;
     } else {
       throw new Error('Column value not found');
     }
