@@ -4,7 +4,6 @@ const mondayHelper = require('../helpers/monday-helper');
 const syncsketchHelper = require('../helpers/syncsketch-helper');
 const firebaseService = require('../services/firebase-service');
 
-const _ = require('lodash');
 const bunyan = require('bunyan');
 const logger = bunyan.createLogger({ name: 'SyncsketchController', level: 'info' });
 
