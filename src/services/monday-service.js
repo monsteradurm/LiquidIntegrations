@@ -504,7 +504,17 @@ const GetInvalidItemStates = async (ids, status) => {
   const mondayClient = MondayClient();
   const query = `query { items (ids: [${ids.join(', ')}] limit:100) {
   	  id state
-      column_values { title text }
+      column_values {
+        id
+        value
+        text
+        column {
+          settings_str
+          title
+          description
+          type
+        }
+      }
 	  }
   }`
 
