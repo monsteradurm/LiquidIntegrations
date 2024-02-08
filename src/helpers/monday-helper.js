@@ -294,12 +294,21 @@ function ParseColumnValue(parent, title, attr) {
     //logger.info("LOOKING FOR " + title + ", " + attr);
     //logger.info(parent.column_values);
 
-    const col = _.find(parent.column_values, c => c.title === title);
+    const col = _.find(parent.column_values, c => c?.column?.title === title);
+
     if (!col) {
         logger.error("Could not find column: " + title + ", " + 
             "_.find(parent.column_values, c => c.title === title), " + JSON.stringify(parent));
+
+        return null;
     }
-    return col[attr];
+
+    if (col[attr]) return col[attr];
+
+    const c = col.column;
+
+    if (c[attr]) return c[attr];
+    return null;
 }
 
 
