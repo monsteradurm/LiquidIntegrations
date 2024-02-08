@@ -295,6 +295,10 @@ function ParseColumnValue(parent, title, attr) {
     //logger.info(parent.column_values);
 
     const col = _.find(parent.column_values, c => c.title === title);
+    if (!col) {
+        logger.error("Could not find column: " + title + ", " + 
+            "_.find(parent.column_values, c => c.title === title), " + JSON.stringify(parent));
+    }
     return col[attr];
 }
 
