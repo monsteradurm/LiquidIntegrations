@@ -455,7 +455,7 @@ const mutateColumns = async (boardId, itemId, val) => {
       id 
     }
   }`;
-
+  
   try {
     const response = await mondayClient.api(mutation);
     logger.info({ boardId, itemId, val }, 'Multiple column values mutated successfully');

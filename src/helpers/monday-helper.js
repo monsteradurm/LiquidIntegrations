@@ -208,6 +208,8 @@ async function AssertSubItem(syncReview, syncItem, mondayItem, reviewDetails) {
         values[deliveredCol] = itemDetails['Delivered Date'];
 
     console.log("SUBITEM", subitem)
+    console.log("VALUES", values)
+
     mondayService.mutateColumns(subitem.board.id, subitem.id, values);
 }
 
@@ -268,6 +270,9 @@ async function OnSyncitemRemoved(syncReview, mondayItem, item_name, reviewDetail
 }
 
 function ParseColumnId(parent, title) {
+
+    console.log("ParseColumnId", parent, title)
+    
     if (!parent || !parent.column_values)
         return null;
 
