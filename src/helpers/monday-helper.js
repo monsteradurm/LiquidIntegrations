@@ -74,11 +74,15 @@ function ParseMaxSubitemIndex(parent) {
 
     const values = [];
     parent.subitems.forEach(s => {
-        const v = '00' + ParseColumnValue(s, 'Index', 'text');
-        values.push(`00${v}`.slice(-3))
+        const i = ParseColumnValue(s, 'Index', 'text');
+        if (i) {
+            const v = '00' + ParseColumnValue(s, 'Index', 'text');
+            values.push(`00${v}`.slice(-3))
+        }
     })
-    const last = values.sort().reverse()[0];
+    if (values.length < 1) return 0;
 
+    const last = values.sort().reverse()[0];
     logger.info("PARSED MAX INDEX VALUE: " + values[0].toString())
     return parseInt(last);
 }
