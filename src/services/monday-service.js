@@ -301,6 +301,18 @@ const createSubitem = async (itemId, name) => {
     create_subitem (parent_item_id: ${itemId}, item_name: "${name}") {
       id
       board { id }
+      column_values{
+        id
+        type
+        text
+        value
+        column {
+          title
+          type
+          settings_str
+          id
+        }
+      }
     }
   }`;
 

@@ -271,15 +271,18 @@ async function OnSyncitemRemoved(syncReview, mondayItem, item_name, reviewDetail
 
 function ParseColumnId(parent, title) {
 
-    console.log("ParseColumnId", parent, title)
+    
     
     if (!parent || !parent.column_values)
         return null;
 
-    const col = _.find(parent.column_values, (c) => c.title === title);
+    const col = _.find(parent.column_values, (c) => 
+        c.title === title || c.column?.title === title);
 
+    console.log("ParseColumnId", parent, title, col)
     if (!!col)
         return col.id;
+    
     
     return null;
 }
