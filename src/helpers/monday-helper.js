@@ -207,6 +207,7 @@ async function AssertSubItem(syncReview, syncItem, mondayItem, reviewDetails) {
     if (itemDetails['Delivered Date'])
         values[deliveredCol] = itemDetails['Delivered Date'];
 
+    console.log("SUBITEM", subitem)
     mondayService.mutateColumns(subitem.board.id, subitem.id, values);
 }
 
