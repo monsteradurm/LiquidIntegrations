@@ -300,18 +300,6 @@ const createSubitem = async (itemId, name) => {
   const mutation = `mutation {
     create_subitem (parent_item_id: ${itemId}, item_name: "${name}") {
       id
-      column_values {
-        id
-        value
-        text
-        column {
-          settings_str
-          title
-          description
-          type
-        }
-      }
-      board { id }
     }
   }`;
 
